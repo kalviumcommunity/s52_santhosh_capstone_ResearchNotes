@@ -52,5 +52,14 @@ Comprehensive Resources: With a single search, users gain access to a wide range
 - Create landing page - 3 hrs
 
 
+## Getting Started
+
+To set up and run the project locally, follow these steps:
+
+1. Clone the repository to your local machine using the command `git clone https://github.com/kalviumcommunity/s52_santhosh_capstone_ResearchNotes.git`.
+2. Navigate to the project directory.
+3. Install dependencies by running `npm install`.
+4. Start the development server by running `npm start`.
+5. Open your web browser and navigate to [http://localhost:5173](http://localhost:5173) to view the project locally.
 
 
