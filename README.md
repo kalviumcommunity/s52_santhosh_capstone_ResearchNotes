@@ -3,7 +3,6 @@
 ##### By santhoshkumar, squad 52
 
 
-
 ## **Introduction**
 
 - Do you feel tired when searching for resources all over the web? Don’t worry, here we are! ResearchNotes, an online platform to get all resources at a single place. 
@@ -46,11 +45,11 @@ Comprehensive Resources: With a single search, users gain access to a wide range
 - Finding relevant API’s - 4 hours
 
 
-Day 3
+### *Day 3*
 
-Setup back-end - 20 mins
-Setup front-end - 20 mins
-Create landing page - 3 hrs
+- Setup back-end - 20 mins
+- Setup front-end - 20 mins
+- Create landing page - 3 hrs
 
 
 
