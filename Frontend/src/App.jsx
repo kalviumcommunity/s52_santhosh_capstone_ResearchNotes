@@ -1,9 +1,11 @@
 import React from 'react'
+import './App.css'
+import Search from './components/Search'
 
 function App() {
   return (
     <div>
-      <h1>CAPSTONE1</h1>
+      <Search />
     </div>
   )
 }
