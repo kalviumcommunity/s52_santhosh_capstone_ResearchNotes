@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {handleSignUp} = require('./Controllers/usercontroller')
+const {handleSignUp, handleValidateOTP, handleLogin} = require('./Controllers/usercontroller')
 
 // Middleware
 router.use(express.json());
@@ -11,7 +11,9 @@ router.get('/', (req, res) => {
 });
 
 // user routes
-
 router.post('/signup',handleSignUp)
+router.post('/validate-user',handleValidateOTP)
+router.post('/login',handleLogin)
+
 
 module.exports = router;
