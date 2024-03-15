@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const handleSignUp = async (req,res) => {
     if (!req.body && !req.body.email && !req.body.password) {
-        return res.status(204).send("No request body found");
+        return res.status(400).send("No request body found");
       }
       const { username, profile, email, password } = req.body;
       const existingUser = await userModel.findOne({ email });
@@ -29,7 +29,7 @@ const handleSignUp = async (req,res) => {
 
 const handleValidateOTP = async (req,res) => {
   if (!req.body) {
-    return res.status(204).send("No request body found");
+    return res.status(400).send("No request body found");
   }
       const  {submittedOTP,token} = req.body
 
@@ -60,7 +60,7 @@ const handleValidateOTP = async (req,res) => {
 
 const handleLogin = async () => {
   if (!req.body) {
-    return res.status(204).send("No request body found");
+    return res.status(400).send("No request body found");
   }
   const { email, password } = req.body;
   try {
