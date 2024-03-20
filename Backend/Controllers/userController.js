@@ -47,7 +47,8 @@ const handleValidateOTP = async (req,res) => {
               profile: decoded.profile,
             });
             await generateToken(res,data._id)
-            return res.status(200).json({message:'Signup successfully',data})
+            const {username,email,profile} = data
+            return res.status(200).json({message:'Signup successfully',data:{username,email,profile}})
           }catch(err){
             console.log(err)
             return res.status(400).json({error:err.message})
@@ -72,7 +73,8 @@ const handleLogin = async (req,res) => {
     const compare = await comparePassword(password, data.password);
     if(compare){
       await generateToken(res,data._id)
-      return res.status(200).json({message:'Login successfully',data})
+      const {username,email,profile} = data
+      return res.status(200).json({message:'Login successfully',data:{username,email,profile}})
     }else{
       return res.status(403).json({error:'Incorrect password'}); 
     }
