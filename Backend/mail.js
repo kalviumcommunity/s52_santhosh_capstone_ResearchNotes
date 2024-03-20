@@ -87,4 +87,5 @@ function sendOTP(mailid,otp){
     })
 }
 
+//exports
 module.exports = {sendOTP}

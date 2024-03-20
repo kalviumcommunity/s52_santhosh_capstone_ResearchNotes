@@ -47,7 +47,7 @@ const handleValidateOTP = async (req,res) => {
               profile: decoded.profile,
             });
             await generateToken(res,data._id)
-            return res.status(200).json({message:'Signup successfully'})
+            return res.status(200).json({message:'Signup successfully',data})
           }catch(err){
             console.log(err)
             return res.status(400).json({error:err.message})
@@ -69,15 +69,15 @@ const handleLogin = async (req,res) => {
     if (!data) {
       return res.status(401).json({error:"Cannot find your account"});
     }
-
     const compare = await comparePassword(password, data.password);
     if(compare){
-
+      await generateToken(res,data._id)
+      return res.status(200).json({message:'Login successfully',data})
     }else{
       return res.status(403).json({error:'Incorrect password'}); 
     }
   }catch(err){
-    console.log(err)
+    console.log(err.message)
     return res.status(401).json({error:err.message}); 
   }
 
