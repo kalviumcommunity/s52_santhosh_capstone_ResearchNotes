@@ -9,5 +9,5 @@ async function comparePassword(password,hashedPassword){
   return await bcrypt.compare(password,hashedPassword)
 }  
 
-
+//exports
 module.exports = {hashPassword,comparePassword}

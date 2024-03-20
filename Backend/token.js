@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// generating access & refresh token and setting on cookie
 const generateToken = (res,userId,expiry=null) => {
     const accessToken = jwt.sign({ _id: userId }, process.env.JWT_ACCESS_TOKEN_SECRET, {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
@@ -21,5 +22,5 @@ const generateToken = (res,userId,expiry=null) => {
       });
 }
 
-
+//exports
 module.exports={generateToken}

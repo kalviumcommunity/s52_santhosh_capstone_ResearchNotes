@@ -30,4 +30,5 @@ const tokenAuth = async (req, res, next) => {
   }
 };
 
+//exports
 module.exports = tokenAuth;
