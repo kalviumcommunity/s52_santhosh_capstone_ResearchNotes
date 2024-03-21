@@ -11,7 +11,7 @@ const handleSignUp = async (req,res) => {
       const { username, profile, email, password } = req.body;
       const existingUser = await userModel.findOne({ email });
       if (existingUser) {
-          return res.status(409).json({eror:"Email already exists"});
+          return res.status(409).json({error:"Email already exists"});
       }
       const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
 
@@ -38,7 +38,7 @@ const handleValidateOTP = async (req,res) => {
           console.log(err)
           return res.status(400).json({error:err.message})
         }
-        if(decoded.otp === submittedOTP){
+        if(Number(decoded.otp) === Number(submittedOTP)){
           try{
           const data =  await userModel.create({
               username: decoded.username,

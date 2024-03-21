@@ -5,17 +5,22 @@ import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/Notes";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
+import UserAuthModal from "./components/UserAuthModal";
 
 function App() {
     const location = useLocation()
+    const [authModal, setAuthModal] = useState(false);
 
   return (
     <div className="min-h-screen">
+      {/* signup & login modal */}
+      <UserAuthModal authModal={authModal} setAuthModal={setAuthModal} />
+
       <h1 className="font-island text-4xl font-semibold absolute top-4 left-4">
         <span className="text-red-500">R</span>esearch
         <span className="text-red-500">N</span>otes
       </h1>
-      <button className="absolute top-4 right-4 font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika">
+      <button className="absolute top-4 right-4 font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={()=>setAuthModal(true)}>
         Get started!
       </button>
       <Routes>
