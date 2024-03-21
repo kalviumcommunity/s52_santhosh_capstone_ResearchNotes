@@ -24,6 +24,8 @@ export default {
       fontFamily:{
         island:['Island Moments','sans-serif'],
         inika:['Inika','sans-serif'],
+        itim: ['Itim', 'sans-serif'],
+        serif : ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman'],
       },
       
   },

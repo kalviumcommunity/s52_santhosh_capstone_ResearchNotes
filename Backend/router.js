@@ -28,8 +28,8 @@ router.use(tokenAuth)
 // Notes Routes (CRUD operations)
 router.get('/get-notes',handleGetNotes)
 router.post('/post-note',handlePostNote)
-router.patch('/update-note',handleUpdateNote)
-router.delete('/delete-note',handleDeleteNote)
+router.patch('/update-note/:id',handleUpdateNote)
+router.delete('/delete-note/:id',handleDeleteNote)
 
 //exports
 module.exports = router;
