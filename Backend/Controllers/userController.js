@@ -31,7 +31,7 @@ const handleValidateOTP = async (req,res) => {
   if (!req.body) {
     return res.status(400).json({ error: "No request body found" });
   }
-      const  {submittedOTP,token} = req.body
+      const  {submittedOTP,token } = req.body
 
       await jwt.verify(token, process.env.JWT_OTP_SECRET,async (err,decoded)=>{
         if(err){
