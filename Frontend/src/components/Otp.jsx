@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { addUserData } from "../Redux/Slices/userSlice";
+import {useDispatch} from 'react-redux'
 
 import { Icon,useToast } from "@chakra-ui/react";
 
-function OtpAuthModal({ userData, token, setOtpPage, setAuthModal, avatar }) {
+function Otp({ signupInfo, setAuthModal, setOtpPage }) {
   const [otp, setotp] = useState("");
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
  
-  
   const toast = useToast();
+  const dispatch = useDispatch();
 
   function handleSubmit() {
     axios
       .post(
         `${BASE_URL}/validate-user`,
         {
-          submittedOTP: otp,
-          token: token,
+          submittedOTP : otp,
+          token : signupInfo.token
         },
-        {
-          withCredentials: true,
-        }
-      )
+        { withCredentials: true })
       .then((res) => {
-        console.log(res.data);
+          dispatch(addUserData({...res.data.data,profile : URL.createObjectURL(signupInfo.avatar)}))
+        // console.log(res.data);
         toast({
           description: res.data.message,
           status: "success",
@@ -32,6 +32,31 @@ function OtpAuthModal({ userData, token, setOtpPage, setAuthModal, avatar }) {
           isClosable: true,
           position: "top-right",
         });
+        if(signupInfo.avatar){
+          const formData = new FormData;
+          formData.append('avatar',signupInfo.avatar)
+          axios.patch(
+            `${BASE_URL}/avatar-set`, formData,
+           {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then((avatarRes)=>{
+            dispatch(addUserData({...res.data.data,profile:avatarRes.data.profile}))
+            // console.log(avatarRes.data)
+          })
+          .catch((err)=>{
+            toast({
+              description: err.response.data.error,
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+              position: "top-right",
+            });
+          })
+        }
         setAuthModal(false);
       })
       .catch((err) => {
@@ -52,8 +77,8 @@ function OtpAuthModal({ userData, token, setOtpPage, setAuthModal, avatar }) {
         <div className="h-36 w-36 rounded-full m-4 relative">
           <img
             src={
-              avatar
-                ? URL.createObjectURL(avatar)
+              signupInfo.avatar
+                ? URL.createObjectURL(signupInfo.avatar)
                 : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
             }
             alt="user avatar"
@@ -61,15 +86,15 @@ function OtpAuthModal({ userData, token, setOtpPage, setAuthModal, avatar }) {
           />
         </div>
         <h1 className="text-center font-serif text-2xl">
-          Hello <span className="font-semibold">{userData.username}</span>
+          Hello <span className="font-semibold">{signupInfo.username}</span>
         </h1>
       </div>
 
       <p>Please check your email to get OTP. We've just sent it to an</p>
-      <h1 className="text-red-500 text-sm">{userData.email}</h1>
+      <h1 className="text-red-500 text-sm">{signupInfo.email}</h1>
 
       <input
-        className="h-10 w-4/6 rounded-sm border border-gray-700 mt-5 text-primary font-bold font-serif text-center text-2xl"
+        className="h-10 w-4/6 rounded-sm border border-gray-700 mt-10 text-primary font-bold font-serif text-center text-2xl"
         type="number"
         placeholder="enter your otp"
         onChange={(e) => setotp(e.target.value)}
@@ -99,4 +124,4 @@ function OtpAuthModal({ userData, token, setOtpPage, setAuthModal, avatar }) {
   );
 }
 
-export default OtpAuthModal;
+export default Otp;
