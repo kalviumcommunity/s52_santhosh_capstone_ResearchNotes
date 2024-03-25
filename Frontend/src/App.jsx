@@ -6,10 +6,12 @@ import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/Notes";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
 import UserAuthModal from "./components/UserAuthModal";
+import { useSelector } from "react-redux";
 
 function App() {
     const location = useLocation()
     const [authModal, setAuthModal] = useState(false);
+    const userData = useSelector(state=>state.userData)
 
   return (
     <div className="min-h-screen">
@@ -20,9 +22,19 @@ function App() {
         <span className="text-red-500">R</span>esearch
         <span className="text-red-500">N</span>otes
       </h1>
-      <button className="absolute top-4 right-4 font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={()=>setAuthModal(true)}>
+      <div className="absolute top-4 right-4">
+      {
+        !userData.isLogged ?
+        <button className="font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={()=>setAuthModal(true)}>
         Get started!
-      </button>
+      </button> : 
+       userData.values.profile !== "" ?
+          <img src={userData.values.profile} alt="" className='h-12 w-12 rounded-full object-cover border border-black' /> :
+      <div className="h-12 w-12 rounded-full flex items-center justify-center bg-orange-500 font-bold text-white text-3xl cursor-pointer">{userData.values.username[0]}
+      </div>
+      }
+      </div>
+      
       <Routes>
         <Route path="/" element={<Search />} />
         <Route path="/notes" element={<Notes />} />
