@@ -5,16 +5,34 @@ import { PiUploadSimpleBold} from "react-icons/pi";
 import { useState } from 'react';
 
 
-const Signup = ({setOtpPage,setSignupInfo}) => {
+const Signup = ({setOtpPage,setSignupInfo, setloading}) => {
 
   const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
   const [avatar, setAvatar] = useState('');
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const toast = useToast()
-    
-    const onSubmit = async (data) => {
 
+    function handleAvatarChange(e) {
+      const image = e.target.files[0];
+      if (image) {
+          if (image.size >  (1024 * 1024 * 2)) {
+             toast({
+              description: 'Please select a smaller image (less than 2MB)',
+              status: 'warning',
+              duration: 3000,
+              isClosable: true,
+              position: 'top-right'
+             })
+              e.target.value = null;
+          } else {
+              setAvatar(image);
+          }
+      }
+  }
+
+    const onSubmit = async (data) => {
+      setloading(true)
       axios.post(`${BASE_URL}/signup`, {
         username: data.username,
         email : data.email,
@@ -38,11 +56,14 @@ const Signup = ({setOtpPage,setSignupInfo}) => {
           isClosable: true,
           position: 'top-right'
         });
+      })
+      .finally(()=>{
+        setloading(false)
       });
     };
 
     return(
-        <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col justify-center mx-4`}> 
+        <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col justify-center mx-4 -mt-6`}> 
             
               <div className='flex justify-between'>
                 <div className="mt-5 font-serif w-4/6">
@@ -79,8 +100,9 @@ const Signup = ({setOtpPage,setSignupInfo}) => {
                 <input
                   type="file"
                   id="avatar-input"
-                  onChange={(e) => setAvatar(e.target.files[0])}
+                  onChange={handleAvatarChange}
                   className="hidden"
+                  accept="image/*"
                   />
                 </div>
               </div>
