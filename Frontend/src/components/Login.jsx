@@ -4,8 +4,7 @@ import { useDispatch } from 'react-redux';
 import { addUserData } from '../Redux/Slices/userSlice';
 import axios from 'axios';
 
-
-const Login = ({setAuthModal}) => {
+const Login = ({setAuthModal,setloading}) => {
 
     const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
     const toast = useToast()
@@ -14,6 +13,7 @@ const Login = ({setAuthModal}) => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     
     const onSubmit = (data) => {
+      setloading(true)
         axios.post(`${BASE_URL}/login`,{
             email:data.email,
             password:data.password,
@@ -44,12 +44,15 @@ const Login = ({setAuthModal}) => {
               position: 'top-right',
             })
           })
+          .finally(()=>{
+            setloading(false)
+          })
     }
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`flex flex-col justify-center mx-4 mt-14`}
+      className={`flex flex-col justify-center mx-4 mt-10`}
     >
       <div className="-mt-7 font-serif">
         <label htmlFor="email" className="block">

@@ -5,7 +5,7 @@ import {useDispatch} from 'react-redux'
 
 import { Icon,useToast } from "@chakra-ui/react";
 
-function Otp({ signupInfo, setAuthModal, setOtpPage }) {
+function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
   const [otp, setotp] = useState("");
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -14,6 +14,7 @@ function Otp({ signupInfo, setAuthModal, setOtpPage }) {
   const dispatch = useDispatch();
 
   function handleSubmit() {
+    setloading(true)
     axios
       .post(
         `${BASE_URL}/validate-user`,
@@ -68,6 +69,9 @@ function Otp({ signupInfo, setAuthModal, setOtpPage }) {
           isClosable: true,
           position: "top-right",
         });
+      })
+      .finally(()=>{
+        setloading(false)
       });
   }
 
