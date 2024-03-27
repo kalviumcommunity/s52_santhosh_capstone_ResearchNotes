@@ -79,7 +79,7 @@ function sendOTP(mailid,otp){
     transfer.sendMail(mailOptions,(err,info)=>{
         if(err){
             console.log("Error",err)
-            return err
+            return
         }else{
             console.log("Email sent successfully,", info.response)
             return info

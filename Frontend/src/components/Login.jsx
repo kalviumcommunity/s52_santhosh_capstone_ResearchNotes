@@ -3,17 +3,40 @@ import { useToast } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../Redux/Slices/userSlice';
 import axios from 'axios';
+import { useState } from 'react';
 
-const Login = ({setAuthModal,setloading}) => {
+const Login = ({setAuthModal,setloading,setSignupInfo, setLoginPage, setOtpPage}) => {
 
+    const [forgotPassword,setForgotPassword] = useState(false)
     const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
     const toast = useToast()
     const dispatch = useDispatch()
     
     const BASE_URL = import.meta.env.VITE_BASE_URL;
-    
+
     const onSubmit = (data) => {
       setloading(true)
+      if(forgotPassword){
+        axios.post(`${BASE_URL}/request-otp`,{email:data.email})
+        .then((res)=>{
+          setSignupInfo({...res.data})
+          setLoginPage(false)
+          setOtpPage(true)
+        })
+        .catch((err)=>{
+          console.log(err)
+          toast({
+            description: err.response.data.error,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right',
+          })
+        })
+        .finally(()=>{
+          setloading(false)
+        }) 
+      }else{
         axios.post(`${BASE_URL}/login`,{
             email:data.email,
             password:data.password,
@@ -46,13 +69,15 @@ const Login = ({setAuthModal,setloading}) => {
           })
           .finally(()=>{
             setloading(false)
-          })
+          }) 
+        }
     }
 
+    
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
       className={`flex flex-col justify-center mx-4 mt-10`}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="-mt-7 font-serif">
         <label htmlFor="email" className="block">
@@ -72,6 +97,8 @@ const Login = ({setAuthModal,setloading}) => {
         </p>
       </div>
 
+        {
+          !forgotPassword &&  
       <div className="mt-3 font-serif">
         <label htmlFor="password" className="block">
           Password
@@ -98,13 +125,19 @@ const Login = ({setAuthModal,setloading}) => {
         <p className="text-red-500 font-itim text-sm">
           {errors.password?.message}
         </p>
+        <p className='text-primary underline cursor-pointer w-fit' onClick={()=>setForgotPassword(true)}>{errors.password?.message === 'Incorrect password' && !errors.email && 'Forgot password'}</p>
       </div>
+        }
 
       <button
-        type="submit"
+        type='submit'
         className="bg-primary text-gray-700 font-bold w-full h-10 mt-3 rounded-3xl"
+        // onClick={(e) => {
+        //   e.preventDefault();
+        //   forgotPassword ? handleForgotPassword() : handleSubmit(onSubmit)();
+        // }}
       >
-        LOG IN
+        {forgotPassword ? "Request OTP" : "LOG IN" }
       </button>
     </form>
   );

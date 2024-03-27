@@ -17,14 +17,18 @@ function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
     setloading(true)
     axios
       .post(
-        `${BASE_URL}/validate-user`,
+        `${BASE_URL}/activate-user`,
         {
           submittedOTP : otp,
           token : signupInfo.token
         },
         { withCredentials: true })
       .then((res) => {
+        if(signupInfo.avatar){
           dispatch(addUserData({...res.data.data,profile : URL.createObjectURL(signupInfo.avatar)}))
+        }else{
+          dispatch(addUserData({...res.data.data}))
+        }
         // console.log(res.data);
         toast({
           description: res.data.message,
@@ -37,7 +41,7 @@ function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
           const formData = new FormData;
           formData.append('avatar',signupInfo.avatar)
           axios.patch(
-            `${BASE_URL}/avatar-set`, formData,
+            `${BASE_URL}/update-user`, formData,
            {
             withCredentials: true,
             headers: {
@@ -45,7 +49,7 @@ function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
             }
           })
           .then((avatarRes)=>{
-            dispatch(addUserData({...res.data.data,profile:avatarRes.data.profile}))
+            dispatch(addUserData({...avatarRes.data.data}))
             // console.log(avatarRes.data)
           })
           .catch((err)=>{
@@ -90,7 +94,7 @@ function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
           />
         </div>
         <h1 className="text-center font-serif text-2xl">
-          Hello <span className="font-semibold">{signupInfo.username}</span>
+          Hello <span className="font-semibold">{signupInfo.username ? signupInfo.username : 'User'}</span>
         </h1>
       </div>
 
@@ -121,7 +125,7 @@ function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
           disabled={otp === ""}
           onClick={handleSubmit}
         >
-          SIGNUP
+          SUBMIT
         </button>
       </div>
     </div>
