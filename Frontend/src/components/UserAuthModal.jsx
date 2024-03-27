@@ -28,7 +28,7 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
   const dispatch = useDispatch();
   const toast = useToast();
 
-
+console.log(signupInfo)
   const handleGoogleSignIn = () => {
     setloading(true)
     signInWithPopup(auth, provider)
@@ -49,7 +49,7 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
       setAuthModal(false)
     }).catch((err)=>{
       toast({
-        description:err.message,
+        description:'something went wrong',
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -84,7 +84,7 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
             }
             {
             loginPage ? (
-              <Login setAuthModal={setAuthModal} setloading={setloading} /> 
+              <Login setAuthModal={setAuthModal} setloading={setloading} setLoginPage={setLoginPage} setOtpPage={setOtpPage} setSignupInfo={setSignupInfo} /> 
             ) : (
                 otpPage ? (
                   <Otp signupInfo={signupInfo} setAuthModal={setAuthModal} setOtpPage={setOtpPage} setloading={setloading}/>

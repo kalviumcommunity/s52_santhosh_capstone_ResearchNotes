@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const {handleSignUp, handleValidateOTP, handleLogin, handleAvatarSet} = require('./Controllers/userController')
+const {handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP} = require('./Controllers/userController')
 const tokenAuth = require('./Middleware/auth')
 const cookieParser = require('cookie-parser');
 const {handleGetNotes,handlePostNote,handleUpdateNote,handleDeleteNote} = require('./Controllers/noteController')
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: multer.memoryStorage()});
 
 // JSON Middleware
 router.use(express.json());
@@ -20,14 +20,18 @@ router.get('/', (req, res) => {
 
 // User Routes (Authentication)
 router.post('/signup', handleSignUp)
-router.post('/validate-user', handleValidateOTP)
+router.post('/activate-user', activateUser)
 router.post('/login',handleLogin)
+
+// User-help Routes
+router.post('/request-otp',handleRequestOTP)
+router.post('/validate-otp',handleValidateOTP)
 
 // Auth Middleware (Authorization)
 router.use(tokenAuth)   
 
 // user avatar set
-router.patch('/avatar-set',upload.single('avatar'),handleAvatarSet)
+router.patch('/update-user',upload.single('avatar'),handleUpdateUser)
 
 // Notes Routes (CRUD operations)
 router.get('/get-notes',handleGetNotes)

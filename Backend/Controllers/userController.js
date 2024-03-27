@@ -31,7 +31,7 @@ const handleSignUp = async (req,res) => {
 }
 
 
-const handleValidateOTP = async (req,res) => {
+const activateUser = async (req,res) => {
   if (!req.body) {
     return res.status(400).json({ error: "No request body found" });
   }
@@ -49,8 +49,8 @@ const handleValidateOTP = async (req,res) => {
               profile: "",
             });
             await generateToken(res,data._id)
-            const {username,email,profile, createdAt} = data
-            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt}})
+            const {username,email,profile, createdAt,updatedAt} = data
+            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt,updatedAt}})
           }catch(err){
             console.log(err)
             return res.status(400).json({error:err.message})
@@ -75,8 +75,8 @@ const handleLogin = async (req,res) => {
     const compare = await comparePassword(password, data.password);
     if(compare){
       await generateToken(res,data._id)
-      const {username,email,profile,createdAt} = data
-      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt}})
+      const {username,email,profile,createdAt,updatedAt} = data
+      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt,updatedAt}})
     }else{
       return res.status(403).json({error:'Incorrect password'}); 
     }
@@ -88,18 +88,64 @@ const handleLogin = async (req,res) => {
 }
 
 
-const handleAvatarSet = async (req,res) => {
-  try{
-    const userId =  req.userId;
-    const avatar_URL = await avatarUpload(req.file.buffer,userId)
-    await userModel.findByIdAndUpdate(userId,{profile:avatar_URL})
-    return res.status(200).json({profile:avatar_URL})
+const handleUpdateUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const updateFields = req.body || {}
+
+    if (req.file) {
+      const avatarURL = await avatarUpload(req.file.buffer, userId);
+      updateFields.profile = avatarURL;
+    }
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      updateFields,
+      { new: true }
+    );
+
+    const { username, email, profile, createdAt, updatedAt } = updatedUser;
+    res.status(200).json({
+      message: 'Updated successfully',
+      data: { username, email, profile, createdAt, updatedAt }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: 'Failed to update user' });
+  }
+};
+
+
+const handleRequestOTP = async (req,res) => {
+  const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
+  try {
+    const data = await userModel.findOne({ email });
+    if (!data) {
+      return res.status(401).json({error:"Cannot find your account"});
+    }
+    await sendOTP(req.body.email,otp)
+    const token = jwt.sign({email:req.body.email,otp}, process.env.JWT_OTP_SECRET,{
+      expiresIn: "5m",
+    });
+    return res.status(200).json({_id:data._id,token})
   }catch(err){
-    console.log(err)
-    return res.status(401).json({error:err.message}); 
+    return res.status(400).json({error:err.message}); 
   }
 }
 
 
+const handleValidateOTP = async (req,res) => {
+  const  {submittedOTP,token } = req.body
+  jwt.verify(token, process.env.JWT_OTP_SECRET,async (err,decoded)=>{
+    if(err){
+      return res.status(400).json({error:'OTP expired please signup again'})
+    }
+    if(Number(decoded.otp) === Number(submittedOTP)){
+      return res.status(200).json({})
+    }else{
+      return res.status(401).json({error:'Invalid otp'})
+    }
+  })
+}
 
-module.exports={handleSignUp, handleValidateOTP, handleLogin, handleAvatarSet}
+
+module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP}
