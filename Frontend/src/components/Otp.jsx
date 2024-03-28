@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { addUserData } from "../Redux/Slices/userSlice";
-import {useDispatch} from 'react-redux'
-
+import {useDispatch} from 'react-redux';
+import { AuthContext } from "./UserAuthModal";
 import { Icon,useToast } from "@chakra-ui/react";
 
-function Otp({ signupInfo, setAuthModal, setOtpPage, setloading }) {
+function Otp({signupInfo}) {
+  const { setloading, setAuthModal,setOtpPage } = useContext(AuthContext);
   const [otp, setotp] = useState("");
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;

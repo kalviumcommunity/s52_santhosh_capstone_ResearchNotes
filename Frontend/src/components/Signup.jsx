@@ -2,10 +2,14 @@ import {useForm} from 'react-hook-form'
 import axios from 'axios';
 import { useToast,Icon } from '@chakra-ui/react'
 import { PiUploadSimpleBold} from "react-icons/pi";
-import { useState } from 'react';
+import { useState,useContext } from 'react';
+import { AuthContext } from "./UserAuthModal";
 
 
-const Signup = ({setOtpPage,setSignupInfo, setloading}) => {
+
+const Signup = () => {
+
+  const { setOtpPage, setSignupInfo, setloading } = useContext(AuthContext);
 
   const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
   const [avatar, setAvatar] = useState('');

@@ -90,7 +90,7 @@ const handleLogin = async (req,res) => {
 
 const handleUpdateUser = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || req.body._id;
     const updateFields = req.body || {}
 
     if (req.file) {
@@ -118,15 +118,16 @@ const handleUpdateUser = async (req, res) => {
 const handleRequestOTP = async (req,res) => {
   const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
   try {
+    const {email} = req.body
     const data = await userModel.findOne({ email });
     if (!data) {
       return res.status(401).json({error:"Cannot find your account"});
     }
-    await sendOTP(req.body.email,otp)
-    const token = jwt.sign({email:req.body.email,otp}, process.env.JWT_OTP_SECRET,{
+    await sendOTP(email,otp)
+    const token = jwt.sign({otp,_id:data._id}, process.env.JWT_OTP_SECRET,{
       expiresIn: "5m",
     });
-    return res.status(200).json({_id:data._id,token})
+    return res.status(200).json({token})
   }catch(err){
     return res.status(400).json({error:err.message}); 
   }
@@ -137,10 +138,10 @@ const handleValidateOTP = async (req,res) => {
   const  {submittedOTP,token } = req.body
   jwt.verify(token, process.env.JWT_OTP_SECRET,async (err,decoded)=>{
     if(err){
-      return res.status(400).json({error:'OTP expired please signup again'})
+      return res.status(400).json({error:'OTP expired please request new one'})
     }
     if(Number(decoded.otp) === Number(submittedOTP)){
-      return res.status(200).json({})
+      return res.status(200).json({_id:decoded._id})
     }else{
       return res.status(401).json({error:'Invalid otp'})
     }
