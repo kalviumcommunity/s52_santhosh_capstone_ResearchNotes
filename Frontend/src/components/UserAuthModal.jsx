@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -16,8 +16,9 @@ import { signInWithPopup } from "firebase/auth"
 import {auth,provider} from '../google/config'
 import {useDispatch} from 'react-redux'
 import { addUserData } from "../Redux/Slices/userSlice";
+import {Routes,Route} from 'react-router-dom'
 
-
+export const AuthContext = createContext(null);
 
 const UserAuthModal = ({ authModal, setAuthModal }) => {
   const [loginPage, setLoginPage] = useState(true);
@@ -28,7 +29,8 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
   const dispatch = useDispatch();
   const toast = useToast();
 
-console.log(signupInfo)
+  console.log(signupInfo)
+
   const handleGoogleSignIn = () => {
     setloading(true)
     signInWithPopup(auth, provider)
@@ -82,17 +84,15 @@ console.log(signupInfo)
               loading && <div className="absolute inset-0 z-10 rounded-md" style={{backgroundColor:'#00000050'}}>
               </div>
             }
+            <AuthContext.Provider value={{setloading,setSignupInfo,setAuthModal,setOtpPage, setLoginPage}}>
             {
             loginPage ? (
-              <Login setAuthModal={setAuthModal} setloading={setloading} setLoginPage={setLoginPage} setOtpPage={setOtpPage} setSignupInfo={setSignupInfo} /> 
+              <Login   /> 
             ) : (
-                otpPage ? (
-                  <Otp signupInfo={signupInfo} setAuthModal={setAuthModal} setOtpPage={setOtpPage} setloading={setloading}/>
-                ) : (
-                  <Signup setOtpPage={setOtpPage} setSignupInfo={setSignupInfo} setloading={setloading} />
-                )
+                otpPage ?  <Otp signupInfo={signupInfo}/> : <Signup />
             )
             }
+              </AuthContext.Provider> 
             {
                 !otpPage && <>
             

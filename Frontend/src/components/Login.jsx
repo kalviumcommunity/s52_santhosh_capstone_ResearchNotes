@@ -4,8 +4,12 @@ import { useDispatch } from 'react-redux';
 import { addUserData } from '../Redux/Slices/userSlice';
 import axios from 'axios';
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from "./UserAuthModal";
 
-const Login = ({setAuthModal,setloading,setSignupInfo, setLoginPage, setOtpPage}) => {
+const Login = () => {
+
+  const { setAuthModal, setSignupInfo, setloading,setLoginPage,setOtpPage } = useContext(AuthContext);
 
     const [forgotPassword,setForgotPassword] = useState(false)
     const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
