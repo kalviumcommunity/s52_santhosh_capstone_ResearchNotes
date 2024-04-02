@@ -27,11 +27,11 @@ router.post('/login',handleLogin)
 router.post('/request-otp',handleRequestOTP)
 router.post('/validate-otp',handleValidateOTP)
 
+// user avatar set and update user data
+router.patch('/update-user/:id',upload.single('avatar'),handleUpdateUser)
+
 // Auth Middleware (Authorization)
 router.use(tokenAuth)   
-
-// user avatar set
-router.patch('/update-user',upload.single('avatar'),handleUpdateUser)
 
 // Notes Routes (CRUD operations)
 router.get('/get-notes',handleGetNotes)

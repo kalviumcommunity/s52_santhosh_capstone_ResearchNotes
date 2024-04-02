@@ -7,11 +7,28 @@ import Notes from "./components/Notes";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
 import UserAuthModal from "./components/UserAuthModal";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import {useDispatch} from 'react-redux';
+import { addUserData } from "./Redux/Slices/userSlice";
+
 
 function App() {
     const location = useLocation()
     const [authModal, setAuthModal] = useState(false);
     const userData = useSelector(state=>state.userData)
+    const dispatch = useDispatch()
+
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+    const handleAuth = () => {
+      axios.get(`${BASE_URL}/user-data`,{ withCredentials: true})
+      .then((res)=>{
+        dispatch(addUserData(...res.data.data))
+      })
+      .catch((err)=>{
+        setAuthModal(true)
+      })
+    }
 
   return (
     <div className="min-h-screen">
@@ -25,8 +42,8 @@ function App() {
       <div className="absolute top-4 right-4">
       {
         !userData.isLogged ?
-        <button className="font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={()=>setAuthModal(true)}>
-        Get started!
+        <button className="font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={handleAuth}>
+        Get started 
       </button> : 
        userData.values.profile !== "" ?
           <img src={userData.values.profile} alt="" className='h-12 w-12 rounded-full object-cover border border-black' /> :

@@ -3,13 +3,12 @@ import { useToast } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../Redux/Slices/userSlice';
 import axios from 'axios';
-import { useState } from 'react';
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
 
 const Login = () => {
 
-  const { setAuthModal, setSignupInfo, setloading,setLoginPage,setOtpPage } = useContext(AuthContext);
+  const { setAuthModal, setTempUserInfo, setloading,setPage} = useContext(AuthContext);
 
     const [forgotPassword,setForgotPassword] = useState(false)
     const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
@@ -23,11 +22,10 @@ const Login = () => {
       if(forgotPassword){
         axios.post(`${BASE_URL}/request-otp`,{email:data.email})
         .then((res)=>{
-          setSignupInfo({...res.data})
-          setLoginPage(false)
-          setOtpPage(true)
+          setTempUserInfo({...res.data,type:'login',email:data.email})
+          setPage('otp')
         })
-        .catch((err)=>{
+        .catch((err)=>{ 
           console.log(err)
           toast({
             description: err.response.data.error,
