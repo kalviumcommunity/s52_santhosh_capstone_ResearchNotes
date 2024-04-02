@@ -5,8 +5,8 @@ import {useDispatch} from 'react-redux';
 import { AuthContext } from "./UserAuthModal";
 import { Icon,useToast } from "@chakra-ui/react";
 
-function Otp({signupInfo}) {
-  const { setloading, setAuthModal,setOtpPage } = useContext(AuthContext);
+function Otp() {
+  const { setloading, setAuthModal,setPage,tempUserInfo, setTempUserInfo } = useContext(AuthContext);
   const [otp, setotp] = useState("");
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -16,44 +16,80 @@ function Otp({signupInfo}) {
 
   function handleSubmit() {
     setloading(true)
-    axios
-      .post(
-        `${BASE_URL}/activate-user`,
-        {
-          submittedOTP : otp,
-          token : signupInfo.token
-        },
-        { withCredentials: true })
-      .then((res) => {
-        if(signupInfo.avatar){
-          dispatch(addUserData({...res.data.data,profile : URL.createObjectURL(signupInfo.avatar)}))
-        }else{
-          dispatch(addUserData({...res.data.data}))
-        }
-        // console.log(res.data);
-        toast({
-          description: res.data.message,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
+    if(tempUserInfo.type=='signup'){
+      axios
+        .post(
+          `${BASE_URL}/activate-user`,
+          {
+            submittedOTP : otp,
+            token : tempUserInfo.token
+          },
+          { withCredentials: true})
+        .then((res) => {
+          if(tempUserInfo.avatar){
+            dispatch(addUserData({...res.data.data,profile : URL.createObjectURL(tempUserInfo.avatar)}))
+          }else{
+            dispatch(addUserData({...res.data.data}))
+          }
+          // console.log(res.data);
+          toast({
+            description: res.data.message,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+          if(tempUserInfo.avatar){
+            const formData = new FormData;
+            formData.append('avatar',tempUserInfo.avatar)
+            axios.patch(
+              `${BASE_URL}/update-user/${res.data.data._id}`, formData,
+             {
+              withCredentials: true,
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            })
+            .then((avatarRes)=>{
+              dispatch(addUserData({...avatarRes.data.data}))
+            })
+            .catch((err)=>{
+              toast({
+                description: err.response.data.error,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+              });
+            })
+          }
+          setAuthModal(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast({
+            description: err.response.data.error,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+        })
+        .finally(()=>{
+          setTempUserInfo({})
+          setloading(false)
         });
-        if(signupInfo.avatar){
-          const formData = new FormData;
-          formData.append('avatar',signupInfo.avatar)
-          axios.patch(
-            `${BASE_URL}/update-user`, formData,
-           {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          .then((avatarRes)=>{
-            dispatch(addUserData({...avatarRes.data.data}))
-            // console.log(avatarRes.data)
-          })
-          .catch((err)=>{
+    }else{
+      axios.post(`${BASE_URL}/validate-otp`,{
+            submittedOTP : otp,
+            token : tempUserInfo.token
+          },
+          { withCredentials: true })
+          .then((response) => {
+            setTempUserInfo({ type:tempUserInfo.type, email:tempUserInfo.email, ...response.data }); 
+            setPage('signup');
+        })
+          .catch((err) => {
             toast({
               description: err.response.data.error,
               status: "error",
@@ -62,22 +98,10 @@ function Otp({signupInfo}) {
               position: "top-right",
             });
           })
-        }
-        setAuthModal(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast({
-          description: err.response.data.error,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-      })
-      .finally(()=>{
-        setloading(false)
-      });
+          .finally(()=>{
+            setloading(false)
+          });
+    }
   }
 
   return (
@@ -86,8 +110,8 @@ function Otp({signupInfo}) {
         <div className="h-36 w-36 rounded-full m-4 relative">
           <img
             src={
-              signupInfo.avatar
-                ? URL.createObjectURL(signupInfo.avatar)
+              tempUserInfo.avatar
+                ? URL.createObjectURL(tempUserInfo.avatar)
                 : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
             }
             alt="user avatar"
@@ -95,12 +119,12 @@ function Otp({signupInfo}) {
           />
         </div>
         <h1 className="text-center font-serif text-2xl">
-          Hello <span className="font-semibold">{signupInfo.username ? signupInfo.username : 'User'}</span>
+          Hello <span className="font-semibold">{tempUserInfo.username ? tempUserInfo.username : 'User'}</span>
         </h1>
       </div>
 
       <p>Please check your email to get OTP. We've just sent it to an</p>
-      <h1 className="text-red-500 text-sm">{signupInfo.email}</h1>
+      <h1 className="text-red-500 text-sm">{tempUserInfo.email}</h1>
 
       <input
         className="h-10 w-4/6 rounded-sm border border-gray-700 mt-10 text-primary font-bold font-serif text-center text-2xl"
@@ -115,7 +139,7 @@ function Otp({signupInfo}) {
       <div className="w-full flex gap-2">
         <button
           className="border-2 border-primary text-gray-700 font-bold w-2/6 h-10 mt-3 rounded-xl"
-          onClick={() => setOtpPage(false)}
+          onClick={() => setPage(tempUserInfo.type)}
         >
           Back
         </button>

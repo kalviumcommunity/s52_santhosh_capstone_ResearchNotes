@@ -13,12 +13,12 @@ const generateToken = async (res, userId, expiry = null) => {
       { expiresIn: expiry ? expiry : process.env.REFRESH_TOKEN_EXPIRY });
 
     res.cookie('accessToken', accessToken, {
-      maxAge: 3600000 * 24 * 30,
+      maxAge: 3600000 * 24 * 30,  //30 days
       httpOnly: true,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      maxAge: 3600000 * 24 * 30,
+      maxAge: 3600000 * 24 * 30,  //30 days
       httpOnly: true,
     });
   } catch (error) {

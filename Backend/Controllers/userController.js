@@ -38,7 +38,7 @@ const activateUser = async (req,res) => {
       const  {submittedOTP,token } = req.body
        jwt.verify(token, process.env.JWT_OTP_SECRET,async (err,decoded)=>{
         if(err){
-          return res.status(400).json({error:'OTP expired please signup again'})
+          return res.status(400).json({error: 'OTP expired, please request a new one'})
         }
         if(Number(decoded.otp) === Number(submittedOTP)){
           try{
@@ -49,8 +49,8 @@ const activateUser = async (req,res) => {
               profile: "",
             });
             await generateToken(res,data._id)
-            const {username,email,profile, createdAt,updatedAt} = data
-            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt,updatedAt}})
+            const {username,email,profile, createdAt,updatedAt, _id} = data
+            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt,updatedAt, _id}})
           }catch(err){
             console.log(err)
             return res.status(400).json({error:err.message})
@@ -75,8 +75,8 @@ const handleLogin = async (req,res) => {
     const compare = await comparePassword(password, data.password);
     if(compare){
       await generateToken(res,data._id)
-      const {username,email,profile,createdAt,updatedAt} = data
-      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt,updatedAt}})
+      const {username,email,profile,createdAt,updatedAt, _id} = data
+      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt,updatedAt, _id}})
     }else{
       return res.status(403).json({error:'Incorrect password'}); 
     }
@@ -90,23 +90,29 @@ const handleLogin = async (req,res) => {
 
 const handleUpdateUser = async (req, res) => {
   try {
-    const userId = req.userId || req.body._id;
-    const updateFields = req.body || {}
-
+    const updateFields = {...req.body} || {}
+    
     if (req.file) {
-      const avatarURL = await avatarUpload(req.file.buffer, userId);
+      const avatarURL = await avatarUpload(req.file.buffer, req.params.id);
       updateFields.profile = avatarURL;
     }
+
+    if (updateFields.password) {
+      const hashedPassword = await hashPassword(updateFields.password);
+      updateFields.password = hashedPassword;
+      await generateToken(res,data._id)
+    }
+
     const updatedUser = await userModel.findByIdAndUpdate(
-      userId,
+      req.params.id,
       updateFields,
       { new: true }
     );
-
-    const { username, email, profile, createdAt, updatedAt } = updatedUser;
+    
+    const { username, email, profile, createdAt, updatedAt, _id } = updatedUser;
     res.status(200).json({
       message: 'Updated successfully',
-      data: { username, email, profile, createdAt, updatedAt }
+      data: { username, email, profile, createdAt, updatedAt, _id }
     });
   } catch (err) {
     console.error(err);
@@ -116,8 +122,8 @@ const handleUpdateUser = async (req, res) => {
 
 
 const handleRequestOTP = async (req,res) => {
-  const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
   try {
+    const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
     const {email} = req.body
     const data = await userModel.findOne({ email });
     if (!data) {
@@ -133,20 +139,29 @@ const handleRequestOTP = async (req,res) => {
   }
 }
 
+const handleValidateOTP = async (req, res) => {
+  try {
+    const { submittedOTP, token } = req.body;
 
-const handleValidateOTP = async (req,res) => {
-  const  {submittedOTP,token } = req.body
-  jwt.verify(token, process.env.JWT_OTP_SECRET,async (err,decoded)=>{
-    if(err){
-      return res.status(400).json({error:'OTP expired please request new one'})
+    if (!submittedOTP || !token) {
+      return res.status(400).json({ error: "Token or otp not found" });
     }
-    if(Number(decoded.otp) === Number(submittedOTP)){
-      return res.status(200).json({_id:decoded._id})
-    }else{
-      return res.status(401).json({error:'Invalid otp'})
-    }
-  })
-}
+
+    jwt.verify(token, process.env.JWT_OTP_SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(400).json({ error: 'OTP expired, please request a new one' });
+      }
+      if (Number(decoded.otp) === Number(submittedOTP)) {
+        return res.status(200).json({ _id: decoded._id });
+      } else {
+        return res.status(401).json({ error: 'Invalid OTP' });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 
 
 module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP}

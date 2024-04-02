@@ -4,18 +4,20 @@ import { useToast,Icon } from '@chakra-ui/react'
 import { PiUploadSimpleBold} from "react-icons/pi";
 import { useState,useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
-
+import { addUserData } from "../Redux/Slices/userSlice";
+import {useDispatch} from 'react-redux';
 
 
 const Signup = () => {
 
-  const { setOtpPage, setSignupInfo, setloading } = useContext(AuthContext);
+  const { setPage, setTempUserInfo, setloading, tempUserInfo,setAuthModal } = useContext(AuthContext);
 
   const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
   const [avatar, setAvatar] = useState('');
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const toast = useToast()
+    const dispatch = useDispatch()
 
     function handleAvatarChange(e) {
       const image = e.target.files[0];
@@ -37,39 +39,70 @@ const Signup = () => {
 
     const onSubmit = async (data) => {
       setloading(true)
-      axios.post(`${BASE_URL}/signup`, {
-        username: data.username,
-        email : data.email,
-        password: data.password,
-      }, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setSignupInfo({ ...data, avatar, token: res.data.token });
-        setOtpPage(true);
-      })
-      .catch((err) => {
-        if (err.response.status === 409) {
-          setError('email', { message: err.response.data.error });
-        }
-    
-        toast({
-          description: err.response.data.error,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top-right'
+      if(tempUserInfo.type != 'login'){
+        axios.post(`${BASE_URL}/signup`, {
+          username: data.username,
+          email : data.email,
+          password: data.password,
+        }, {
+          withCredentials: true
+        })
+        .then((res) => {
+          delete data.password;
+          delete data.repeatPassword;
+          setTempUserInfo({ ...data, avatar, token: res.data.token,type:'signup' });
+          setPage('otp');
+        })
+        .catch((err) => {
+          if (err.response.status === 409) {
+            setError('email', { message: err.response.data.error });
+          }
+      
+          toast({
+            description: err.response.data.error,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right'
+          });
+        })
+        .finally(()=>{
+          setloading(false)
         });
-      })
-      .finally(()=>{
-        setloading(false)
-      });
+      }
+      else{
+        axios.patch(
+          `${BASE_URL}/update-user/${tempUserInfo._id}`, {password:data.password},
+         {
+          withCredentials: true,
+        })
+        .then((res)=>{
+          dispatch(addUserData({...res.data.data}))
+          setTempUserInfo({})
+          setAuthModal(false)
+        })
+        .catch((err)=>{
+          // console.log(err)
+          toast({
+            description: err.response.data.error,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+        })
+        .finally(()=>{
+          setloading(false)
+        });
+      }
     };
 
     return(
         <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col justify-center mx-4 -mt-6`}> 
+            {
+              tempUserInfo.type != 'login' ?
             
-              <div className='flex justify-between'>
+              <div className='flex justify-between items-center'>
                 <div className="mt-5 font-serif w-4/6">
                   <label htmlFor="username" className="block">Username</label>
                   <input type='username' id="username" className={`bg-transparent border ${errors.username ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm pl-2`} placeholder='santhosh' {...register('username',{required:"username required"})} />
@@ -86,6 +119,7 @@ const Signup = () => {
                   alt="user avatar"
                   className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
                 />
+
 
                 <label
                   htmlFor="avatar-input"
@@ -110,11 +144,17 @@ const Signup = () => {
                   />
                 </div>
               </div>
+               : 
+              <h1 className='text-green-600 font-bold my-2 text-lg'>Set your new password</h1>
+                }
 
 
-            <div className="-mt-7 font-serif">
+            <div className="mt-2 font-serif">
               <label htmlFor="email" className="block">Email address</label>
-              <input type='email' id="email" className={`bg-transparent border ${errors.email ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm pl-2`} placeholder='example@domain.com' {...register('email',{required:"mail id required"})} />
+              <input type='email' id="email" className={`bg-transparent border ${errors.email ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm pl-2`} placeholder='example@domain.com' {...register('email',{required:"mail id required"})}
+              value={tempUserInfo.type == 'login' ? tempUserInfo.email : undefined}
+              readOnly={tempUserInfo.type == 'login'}
+               />
               <p className="text-red-500 font-itim text-sm">{errors.email?.message}</p>
             </div>
 
@@ -143,7 +183,7 @@ const Signup = () => {
         
 
             <button type="submit" className="bg-primary text-gray-700 font-bold w-full h-10 mt-3 rounded-3xl">
-                GET OTP
+                {tempUserInfo.type == 'login' ? 'CHANGE NOW' : 'GET OTP'}
             </button>
             
           
