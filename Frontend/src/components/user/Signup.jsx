@@ -1,11 +1,11 @@
 import {useForm} from 'react-hook-form'
 import axios from 'axios';
-import { useToast,Icon } from '@chakra-ui/react'
-import { PiUploadSimpleBold} from "react-icons/pi";
+import { useToast } from '@chakra-ui/react'
 import { useState,useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
-import { addUserData } from "../Redux/Slices/userSlice";
+import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
+import UserAvatar from './UserAvatar';
 
 
 const Signup = () => {
@@ -102,46 +102,15 @@ const Signup = () => {
             {
               tempUserInfo.type != 'login' ?
             
-              <div className='flex justify-between items-center'>
+              <div className='mb-6'>
                 <div className="mt-5 font-serif w-4/6">
                   <label htmlFor="username" className="block">Username</label>
                   <input type='username' id="username" className={`bg-transparent border ${errors.username ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm pl-2`} placeholder='santhosh' {...register('username',{required:"username required"})} />
                   <p className="text-red-500 font-itim text-sm">{errors.username?.message}</p>
                 </div>
 
-                <div className="h-28 w-28 rounded-full m-4 relative">
-                <img
-                  src={
-                    avatar
-                      ? URL.createObjectURL(avatar)
-                      : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
-                  }
-                  alt="user avatar"
-                  className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
-                />
-
-
-                <label
-                  htmlFor="avatar-input"
-                  className="absolute inset-0 flex flex-col justify-center items-center cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-full"
-                  style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
-                >
-                  <Icon
-                    as={PiUploadSimpleBold}
-                    className="text-2xl cursor-pointer"
-                    style={{ color: "white" }}
-                  />
-                  <p className="text-white font-extrabold text-xs font-serif text-shadow-2xl text-shadow-red-500">
-                    upload avatar
-                  </p>
-                </label>
-                <input
-                  type="file"
-                  id="avatar-input"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                  accept="image/*"
-                  />
+                <div className='h-28 w-28 absolute top-8 right-10'>
+                <UserAvatar avatar={avatar && URL.createObjectURL(avatar)} handleAvatarChange={handleAvatarChange} />
                 </div>
               </div>
                : 
@@ -186,8 +155,6 @@ const Signup = () => {
                 {tempUserInfo.type == 'login' ? 'CHANGE NOW' : 'GET OTP'}
             </button>
             
-          
-
             </form>
     )
 }

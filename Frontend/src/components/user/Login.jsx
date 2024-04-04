@@ -1,7 +1,7 @@
 import {useForm} from 'react-hook-form'
 import { useToast } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
-import { addUserData } from '../Redux/Slices/userSlice';
+import { addUserData } from '../../Redux/Slices/userSlice';
 import axios from 'axios';
 import { useState, useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
