@@ -12,9 +12,13 @@ const userSlice = createSlice({
     addUserData(state, action) {
       state.isLogged = true;
       state.values = action.payload;
+    },
+    deleteUserData(state,action){
+      state.isLogged = false;
+      state.values = {};
     }
   }
 });
 
-export const {addUserData} = userSlice.actions;
+export const {addUserData,deleteUserData} = userSlice.actions;
 export default userSlice.reducer;

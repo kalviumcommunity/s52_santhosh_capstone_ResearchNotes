@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP} = require('./Controllers/userController')
+const {handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleLogout} = require('./Controllers/userController')
 const tokenAuth = require('./Middleware/auth')
 const cookieParser = require('cookie-parser');
 const {handleGetNotes,handlePostNote,handleUpdateNote,handleDeleteNote} = require('./Controllers/noteController')
@@ -30,8 +30,15 @@ router.post('/validate-otp',handleValidateOTP)
 // user avatar set and update user data
 router.patch('/update-user/:id',upload.single('avatar'),handleUpdateUser)
 
+
 // Auth Middleware (Authorization)
 router.use(tokenAuth)   
+
+//logout
+router.get('/logout',handleLogout)
+
+//user-data
+router.get('/user-data',handleGetUserData)
 
 // Notes Routes (CRUD operations)
 router.get('/get-notes',handleGetNotes)

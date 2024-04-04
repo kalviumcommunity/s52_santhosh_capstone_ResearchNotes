@@ -13,9 +13,9 @@ import Otp from "./Otp";
 import Signup from "./Signup";
 import Login from "./Login";
 import { signInWithPopup } from "firebase/auth"
-import {auth,provider} from '../google/config'
+import {auth,provider} from '../../google/config'
 import {useDispatch} from 'react-redux'
-import { addUserData } from "../Redux/Slices/userSlice";
+import { addUserData } from "../../Redux/Slices/userSlice";
 
 export const AuthContext = createContext(null);
 
@@ -27,7 +27,6 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
   const dispatch = useDispatch();
   const toast = useToast();
 
-  // console.log(tempUserInfo)
 
   const handleGoogleSignIn = () => {
     setloading(true)

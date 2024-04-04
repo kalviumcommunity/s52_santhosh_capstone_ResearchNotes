@@ -100,7 +100,7 @@ const handleUpdateUser = async (req, res) => {
     if (updateFields.password) {
       const hashedPassword = await hashPassword(updateFields.password);
       updateFields.password = hashedPassword;
-      await generateToken(res,data._id)
+      await generateToken(res,req.params.id)
     }
 
     const updatedUser = await userModel.findByIdAndUpdate(
@@ -163,5 +163,25 @@ const handleValidateOTP = async (req, res) => {
 };
 
 
+const handleGetUserData = async (req, res) => {
+  try{
+    const userId =  req.userId;
+    const data = await userModel.findById(userId)
+    res.status(200).json({data})
+  }catch(err){
+    res.status(400).json({error:err.message})
+  }
+}
+ 
 
-module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP}
+const handleLogout = async (req,res) => {
+  try{
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.status(200).json({message:'Logout successfull'})
+  }catch(err){
+    res.status(400).json({error:err.message})
+  }
+}
+
+module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleLogout}

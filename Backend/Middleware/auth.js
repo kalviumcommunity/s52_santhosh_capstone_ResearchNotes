@@ -5,6 +5,7 @@ const { generateToken } = require("../Utils/token");
 const tokenAuth = async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
+
   if (!accessToken || !refreshToken){return res.status(403).json({ error: "Token not exists" })}
   try {
     const decoded = await jwt.verify(

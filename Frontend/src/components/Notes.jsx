@@ -1,5 +1,4 @@
 import React from 'react'
-import ExampleModal from './UserAuthModal'
 
 function Notes() {
   

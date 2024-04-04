@@ -1,39 +1,56 @@
 import React, { useState, useEffect } from "react";
 import Search from "./components/Search";
-import { Icon } from "@chakra-ui/react";
+import { Avatar, Icon, Spinner } from "@chakra-ui/react";
 import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/Notes";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
-import UserAuthModal from "./components/UserAuthModal";
-import { useSelector } from "react-redux";
+import UserAuthModal from "./components/user/UserAuthModal";
+import { useSelector,useDispatch } from "react-redux";
 import axios from "axios";
-import {useDispatch} from 'react-redux';
 import { addUserData } from "./Redux/Slices/userSlice";
+import { BsArrowRight } from "react-icons/bs";
+import Profile from "./components/user/Profile";
 
 
 function App() {
     const location = useLocation()
     const [authModal, setAuthModal] = useState(false);
+    const [profileModal, setProfileModal] = useState(false);
+    const [returnUser, setReturnUser] = useState(true);
+    const [authLoading, setAuthLoading] = useState(false);
+
     const userData = useSelector(state=>state.userData)
     const dispatch = useDispatch()
 
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const handleAuth = () => {
-      axios.get(`${BASE_URL}/user-data`,{ withCredentials: true})
-      .then((res)=>{
-        dispatch(addUserData(...res.data.data))
-      })
-      .catch((err)=>{
+      if(returnUser){
+        setAuthLoading(true)
+        axios.get(`${BASE_URL}/user-data`, { withCredentials: true })
+        .then((res) => {
+          dispatch(addUserData(res.data.data)); 
+        })
+        .catch((err) => {
+          setReturnUser(false);
+          setAuthModal(true)
+        })
+        .finally(()=>{
+          setAuthLoading(false)
+        })
+      }else{
         setAuthModal(true)
-      })
+      }
     }
 
   return (
     <div className="min-h-screen">
       {/* signup & login modal */}
       <UserAuthModal authModal={authModal} setAuthModal={setAuthModal} />
+
+      {/* profile modal */}
+      <Profile profileModal={profileModal} setProfileModal={setProfileModal} />
 
       <h1 className="font-island text-4xl font-semibold absolute top-4 left-4">
         <span className="text-red-500">R</span>esearch
@@ -42,12 +59,29 @@ function App() {
       <div className="absolute top-4 right-4">
       {
         !userData.isLogged ?
-        <button className="font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika" onClick={handleAuth}>
+        <button 
+        className={`font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika flex justify-center items-center ${authLoading && "cursor-not-allowed"}`}
+        onClick={handleAuth}
+        disabled={authLoading}
+        >
         Get started 
+        <div className="ml-2 flex justify-center items-center">
+        {
+           authLoading ?
+           <Spinner size='sm' /> :
+          <BsArrowRight />  
+        }
+        </div>
       </button> : 
        userData.values.profile !== "" ?
-          <img src={userData.values.profile} alt="" className='h-12 w-12 rounded-full object-cover border border-black' /> :
-      <div className="h-12 w-12 rounded-full flex items-center justify-center bg-orange-500 font-bold text-white text-3xl cursor-pointer">{userData.values.username[0]}
+          <img src={userData.values.profile} 
+           className='h-12 w-12 rounded-full object-cover border border-black cursor-pointer'
+           onClick={()=>setProfileModal(true)}
+           /> :
+      <div className="h-12 w-12 cursor-pointer"
+      onClick={()=>setProfileModal(true)}
+      >
+        <Avatar size='md' bg='tomato' name={userData.values.username} />
       </div>
       }
       </div>

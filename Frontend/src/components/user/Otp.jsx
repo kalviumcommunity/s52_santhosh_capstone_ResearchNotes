@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import { addUserData } from "../Redux/Slices/userSlice";
+import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
 import { AuthContext } from "./UserAuthModal";
-import { Icon,useToast } from "@chakra-ui/react";
+import { Avatar, Icon,useToast } from "@chakra-ui/react";
 
 function Otp() {
   const { setloading, setAuthModal,setPage,tempUserInfo, setTempUserInfo } = useContext(AuthContext);
@@ -108,15 +108,15 @@ function Otp() {
     <div className="flex flex-col items-center justify-center">
       <div className="mb-10">
         <div className="h-36 w-36 rounded-full m-4 relative">
-          <img
-            src={
-              tempUserInfo.avatar
-                ? URL.createObjectURL(tempUserInfo.avatar)
-                : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
-            }
-            alt="user avatar"
-            className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
-          />
+          {
+             tempUserInfo.avatar ?
+             <img
+             src={URL.createObjectURL(tempUserInfo.avatar)}
+             alt="user avatar"
+             className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
+             /> : 
+             <Avatar height='full' width='full'/>
+          }
         </div>
         <h1 className="text-center font-serif text-2xl">
           Hello <span className="font-semibold">{tempUserInfo.username ? tempUserInfo.username : 'User'}</span>
