@@ -87,7 +87,7 @@ function App() {
       </div>
       
       <Routes>
-        <Route path="/" element={<Search />} />
+        <Route path="/" element={<Search setAuthModal={setAuthModal} />} />
         <Route path="/notes" element={<Notes />} />
       </Routes>
 
