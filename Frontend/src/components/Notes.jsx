@@ -1,4 +1,5 @@
 import React from 'react'
+import Youtube from './results/Youtube'
 
 function Notes() {
   
@@ -7,6 +8,10 @@ function Notes() {
       {/* <div className='bg-yellow-100 w-4/6 h-full rounded-2xl'>
         
       </div> */}
+      <div className='absolute top-10 right-0 overflow-x-scroll w-96 h-screen'>
+      <Youtube />
+
+      </div>
     </div>
   )
 }

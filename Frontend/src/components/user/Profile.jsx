@@ -11,10 +11,9 @@ import {
     Button
   } from '@chakra-ui/react'
 import UserAvatar from './UserAvatar';
-import { useSelector } from 'react-redux';
+import { useSelector , useDispatch} from 'react-redux';
 import { MdLogout } from "react-icons/md";
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
 import { deleteUserData } from '../../Redux/Slices/userSlice';
 
 
