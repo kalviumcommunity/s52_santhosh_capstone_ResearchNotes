@@ -11,6 +11,7 @@ import axios from "axios";
 import { addUserData } from "./Redux/Slices/userSlice";
 import { BsArrowRight } from "react-icons/bs";
 import Profile from "./components/user/Profile";
+import './App.css'
 
 
 function App() {
@@ -45,18 +46,19 @@ function App() {
     }
 
   return (
-    <div className="min-h-screen">
+    <div>
       {/* signup & login modal */}
       <UserAuthModal authModal={authModal} setAuthModal={setAuthModal} />
 
       {/* profile modal */}
       <Profile profileModal={profileModal} setProfileModal={setProfileModal} />
 
-      <h1 className="font-island text-4xl font-semibold absolute top-4 left-4">
+     <nav className="w-full flex justify-between items-center h-16 px-4">
+      <h1 className="font-island text-4xl font-semibold">
         <span className="text-red-500">R</span>esearch
         <span className="text-red-500">N</span>otes
       </h1>
-      <div className="absolute top-4 right-4">
+      <div>
       {
         !userData.isLogged ?
         <button 
@@ -65,34 +67,32 @@ function App() {
         disabled={authLoading}
         >
         Get started 
-        <div className="ml-2 flex justify-center items-center">
+        <span className="ml-2 flex justify-center items-center">
         {
            authLoading ?
            <Spinner size='sm' /> :
-          <BsArrowRight />  
+           <BsArrowRight />  
         }
-        </div>
+        </span>
       </button> : 
        userData.values.profile !== "" ?
-          <img src={userData.values.profile} 
-           className='h-12 w-12 rounded-full object-cover border border-black cursor-pointer'
-           onClick={()=>setProfileModal(true)}
-           /> :
-      <div className="h-12 w-12 cursor-pointer"
-      onClick={()=>setProfileModal(true)}
-      >
-        <Avatar size='md' bg='tomato' name={userData.values.username} />
-      </div>
+       <img src={userData.values.profile} 
+       className='h-12 w-12 rounded-full object-cover border border-black cursor-pointer'
+       onClick={()=>setProfileModal(true)}
+       /> :
+       <Avatar size='md' bg='tomato' name={userData.values.username} cursor='pointer' onClick={()=>setProfileModal(true)} />
       }
       </div>
-      
+      </nav>
+      <div id="results-div">
       <Routes>
         <Route path="/" element={<Search setAuthModal={setAuthModal} />} />
         <Route path="/notes" element={<Notes />} />
       </Routes>
+      </div>
 
-      <footer className="flex absolute bottom-0 z-10 w-full">
-        <div className="w-full flex items-center justify-center p-1 bg-primary rounded-tr-lg border-r-2">
+      <footer className="flex fixed bottom-0 z-10 w-full h-10">
+        <div className="w-full flex items-center justify-center bg-primary rounded-tr-lg border-r-2">
           <Link to="/">
             <Icon
               as={IoMdSearch}
