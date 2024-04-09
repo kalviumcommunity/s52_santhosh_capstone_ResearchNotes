@@ -1,4 +1,9 @@
-/* HTML: <div class="loader"></div> */
+
+
+#results-div{
+    height: calc(100vh - 6.5rem);
+}
+
 .loader {
   width: 50px;
   aspect-ratio: 1;
@@ -11,9 +16,9 @@
 .loader:after{
   background:
     radial-gradient(closest-side at 50% 12.5%,
-     #f03355 96%,#0000) 50% 0/20% 80% repeat-y,
+     #00bbff 96%,#0000) 50% 0/20% 80% repeat-y,
     radial-gradient(closest-side at 12.5% 50%,
-     #f03355 96%,#0000) 0 50%/80% 20% repeat-x;
+     #00bbff 96%,#0000) 0 50%/80% 20% repeat-x;
 }
 .loader:before,
 .loader:after {
