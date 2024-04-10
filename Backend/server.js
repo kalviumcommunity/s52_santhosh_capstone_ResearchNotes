@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 4000;
 require('dotenv').config();
 
 // Cors Policy Middleware
-const allowedOrigins = process.env.CORS_ORIGIN.split(',');
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+// const allowedOrigins = process.env.CORS_ORIGIN.split(',');
+app.use(cors({credentials: true, origin:true }));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
