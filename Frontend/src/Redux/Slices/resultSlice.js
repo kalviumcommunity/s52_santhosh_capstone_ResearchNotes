@@ -12,6 +12,7 @@ const resultSlice = createSlice({
     addResults(state, action) {
       const { key, value } = action.payload;
       state.results[key] = value;
+      state.results.okay = true;
     },
     addQuery(state,action){
       state.query = action.payload;

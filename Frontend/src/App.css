@@ -4,6 +4,11 @@
     height: calc(100vh - 6.5rem);
 }
 
+#sites-div{
+    height: calc(100vh - 6.5rem - 8rem - 10rem - 2px);
+}
+
+
 .loader {
   width: 50px;
   aspect-ratio: 1;
