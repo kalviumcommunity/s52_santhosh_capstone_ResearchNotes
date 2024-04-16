@@ -13,6 +13,7 @@ function useHandleFetchResults(query) {
   const GCSE_ID = import.meta.env.VITE_GCSE_ID
   
   const fetchVideos = () => {
+   
     axios
       .get(
         `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=20&videoDuration=long`
@@ -22,6 +23,7 @@ function useHandleFetchResults(query) {
   }
 
   const fetchMeaning = () =>{
+ 
         axios.get(`https://api.datamuse.com/words?md=d&sp=${encodeURIComponent(query)}`)
         .then((res) => {
           const meanings = res.data[0]?.defs.map(item => {
@@ -44,6 +46,7 @@ function useHandleFetchResults(query) {
   }
 
   const fetchSites = () => {
+  
     axios.get(`https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GCSE_ID}&q=${encodeURIComponent(query)}&alt=json`)
       .then((res) => {
         // console.log(res.data)

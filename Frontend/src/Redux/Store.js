@@ -9,6 +9,6 @@ export const store = configureStore({
     reducer:{
         userData:userReducer,
         resultData:resultReducer,
-        NoteData:noteReducer,
+        noteData:noteReducer,
     }
 })
