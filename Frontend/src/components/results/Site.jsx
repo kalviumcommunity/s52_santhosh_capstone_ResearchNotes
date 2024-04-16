@@ -4,18 +4,20 @@ import { Text } from "@chakra-ui/react";
 
 function Site() {
   const { results } = useSelector((state) => state.resultData);
+  const {splitMode} = useSelector(state=>state.noteData)
+
 
   // console.log(results.sites);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full overflow-y-scroll">
       {results.sites &&
         results.sites.length !== 0 &&
         results.sites.map((site, index) => {
           return (
             <div
               key={index}
-              className="flex items-start p-3 rounded-md shadow-md hover:bg-gray-100 transition-colors duration-300"
+              className="flex items-start p-3 rounded-xl shadow-md bg-white hover:bg-gray-100 transition-colors duration-300"
             >
               <div className="flex-shrink-0 mr-4">
                 <img
@@ -36,11 +38,11 @@ function Site() {
                   <Text noOfLines={1} className="font-semibold" dangerouslySetInnerHTML={{ __html: site.htmlTitle }} >
                   </Text>
                 </a>
-                <Text noOfLines={2} className="text-xs"  dangerouslySetInnerHTML={{ __html: site.htmlSnippet }} >
+                <Text noOfLines={splitMode ? 1 : 2} className="text-xs"  dangerouslySetInnerHTML={{ __html: site.htmlSnippet }} >
                 </Text>
-                <div className="text-gray-500 text-sm">
+                <Text className="text-gray-500 text-xs" noOfLines={1}>
                   <span>{site.displayLink}</span>
-                </div>
+                </Text>
               </div>
             </div>
           );

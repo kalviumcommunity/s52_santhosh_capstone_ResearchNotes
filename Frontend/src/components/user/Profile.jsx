@@ -15,6 +15,7 @@ import { useSelector , useDispatch} from 'react-redux';
 import { MdLogout } from "react-icons/md";
 import axios from 'axios';
 import { deleteUserData } from '../../Redux/Slices/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 function Profile({profileModal,setProfileModal}) {
@@ -22,6 +23,7 @@ function Profile({profileModal,setProfileModal}) {
 
     const toast = useToast()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -30,6 +32,7 @@ const handleLogout = () => {
       withCredentials:true
     })
     .then((res)=>{
+      navigate('/')
       dispatch(deleteUserData())
       setProfileModal(false)
     })

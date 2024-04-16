@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const initialState = {
   collection : [],
+  currentNote : {},
+  splitMode : false
 };
 
 const noteSlice = createSlice({
@@ -10,9 +12,15 @@ const noteSlice = createSlice({
   reducers: {
    addNotes(state,action){
         state.collection = action.payload
+   },
+   addCurrentNote(state,action){
+        state.currentNote = action.payload
+   },
+   changeMode(state,action){
+        state.splitMode = action.payload
    }
   }
 });
 
-export const {addNotes} = noteSlice.actions;
+export const {addNotes, addCurrentNote, changeMode} = noteSlice.actions;
 export default noteSlice.reducer;
