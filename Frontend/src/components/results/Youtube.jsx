@@ -9,14 +9,15 @@ function Youtube() {
   const { results } = useSelector((state) => state.resultData);
   const {splitMode} = useSelector(state=>state.noteData)
 
+
   return (
     <div className="h-full w-full  overflow-y-scroll">
       {results.videos &&
-        results.videos.length > 0 &&
+        results.videos.length > 0 ?
         results.videos.map((video, index) => {
           return (
             <div
-              className="flex justify-center items-center md:m-2 xs:m-1 bg-white rounded-md box-border "
+              className="flex items-center md:m-2 xs:m-1 bg-white rounded-md box-border"
               key={index}
             >
               <img
@@ -24,11 +25,11 @@ function Youtube() {
                 alt="thumbnail"
                 className={`${splitMode ? 'h-24' : 'h-28'} p-2 rounded-sm`}
               />
-              <div className="max-w-56">
+              <div className="flex-grow">
                 <Heading noOfLines={2} fontSize="small" >
                   {video.snippet.title}
                 </Heading>
-                {
+                { 
                   !splitMode && 
                 <Text noOfLines={1} fontSize="x-small">
                   {video.snippet.description}
@@ -61,7 +62,18 @@ function Youtube() {
               </div>
             </div>
           );
-        })}
+        }) :  Array(5).fill(0).map((_,index)=>{
+          return(
+              <div key={index} className="flex justify-center items-center h-28 bg-white m-2 p-2 animate-pulse">
+                <div className="h-5/6 w-36 bg-slate-400"></div>
+                <div className="flex-grow m-2 self-start">
+                  <div className="h-4 bg-slate-400 m-2"></div>
+                  <div className="h-4 w-32 bg-slate-400 m-2"></div>
+                </div>
+              </div>
+            )
+          })
+        }
     </div>
   );
 }

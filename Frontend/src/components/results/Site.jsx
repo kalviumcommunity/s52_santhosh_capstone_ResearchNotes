@@ -12,7 +12,7 @@ function Site() {
   return (
     <div className="h-full w-full overflow-y-scroll">
       {results.sites &&
-        results.sites.length !== 0 &&
+        results.sites.length !== 0 ?
         results.sites.map((site, index) => {
           return (
             <div
@@ -46,7 +46,18 @@ function Site() {
               </div>
             </div>
           );
-        })}
+        }) : Array(5).fill(0).map((_, index)=>{
+          return(
+            <div key={index} className="flex animate-pulse">
+                <div className="h-14 w-14 rounded-full bg-slate-400 mx-4 my-1"></div>
+                <div className="w-full">
+                  <div className="h-3 w-11/12 bg-slate-400 m-2"></div>
+                  <div className="h-3 w-32 bg-slate-400 m-2"></div>
+                </div>
+            </div>
+          )
+        })
+        }
     </div>
   );
 }

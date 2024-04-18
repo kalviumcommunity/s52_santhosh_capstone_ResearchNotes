@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Search from "./components/Search";
-import { Avatar, Icon, Spinner } from "@chakra-ui/react";
+import { Avatar, Icon, Spinner, Tooltip, useToast } from "@chakra-ui/react";
 import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/Notes";
@@ -14,7 +14,7 @@ import Profile from "./components/user/Profile";
 import './App.css'
 import Editor from "./components/Editor";
 import { PiSquareSplitHorizontal } from "react-icons/pi";
-import { changeMode } from "./Redux/Slices/noteSlice";
+import { changeSplitMode } from "./Redux/Slices/noteSlice";
 
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
     const { currentNote, splitMode } = useSelector((state) => state.noteData)
 
     const dispatch = useDispatch()
+    const toast = useToast()
 
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -52,7 +53,17 @@ function App() {
     }
 
     const handleSplit = () => {
-      dispatch(changeMode(!splitMode))
+      if(currentNote && Object.keys(currentNote).length !== 0){
+        dispatch(changeSplitMode(!splitMode))
+      }else{
+        toast({
+          description: 'Please open any note to split',
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
     }
 
    const handleHeight = {
@@ -92,14 +103,21 @@ function App() {
        userData.values.profile !== "" ?
        <div className="flex justify-center items-center">
           {
-            currentNote && Object.keys(currentNote).length !== 0 && results.okay  && <PiSquareSplitHorizontal className="text-4xl font-bold text-primary mx-4 cursor-pointer shadow-2xl shadow-black"
-            onClick={handleSplit}
-             /> 
+            <Tooltip  label='Split Mode' fontSize='xs'>
+              <div className="w-fit h-fit mx-4">
+                <PiSquareSplitHorizontal className={`text-4xl font-bold shadow-2xl shadow-black ${currentNote && Object.keys(currentNote).length !== 0 ? 'cursor-pointer' : 'cursor-not-allowed'} ${splitMode ? 'text-primary' : 'text-gray-500'}`}
+                onClick={handleSplit}
+                /> 
+              </div>
+            </Tooltip>
           }
-         <img src={userData.values.profile} 
-         className='h-12 w-12 rounded-full object-cover border-3 border-red-500 cursor-pointer'
+          <Tooltip  label='profile' fontSize='xs'>
+         <img
+         src={userData.values.profile} 
+         className='h-12 w-12 rounded-full object-cover border-2 border-red-500 cursor-pointer'
          onClick={()=>setProfileModal(true)}
          /> 
+         </Tooltip>
        </div> :
        <Avatar size='md' bg='tomato' name={userData.values.username} cursor='pointer' onClick={()=>setProfileModal(true)} />
       }
@@ -110,12 +128,14 @@ function App() {
           splitMode ?
           (
             <div style={handleHeight}  className="flex" >
-              <div className="h-full w-3/6 flex-1">
-                <Search setAuthModal={setAuthModal} />
-              </div>
-              <div className="h-full w-3/6 flex-2">
-                <Editor />
-              </div>
+                <div className="h-full w-3/6 resize-x overflow-auto resizable-area cursor-default min-w-[50vw] ">
+                  <Search setAuthModal={setAuthModal} />
+                </div>
+                <div
+                className="h-full flex-grow"
+                  >
+                  <Editor />
+                </div>
             </div>
           ) : (
       <div style={handleHeight}>
@@ -132,20 +152,28 @@ function App() {
           <footer className="flex fixed bottom-0 z-10 w-full h-10">
         <div className="w-full flex items-center justify-center bg-primary rounded-tr-lg border-r-2">
           <Link to="/search">
+          <Tooltip label='Search' fontSize='xs'>
+          <div className="h-fit w-fit"> 
             <Icon
               as={IoMdSearch}
               className="text-4xl cursor-pointer"
               style={{ color: location.pathname==='/' && "red" }}
             />
+            </div>
+            </Tooltip>
           </Link>
         </div>
         <div className="w-full flex items-center justify-center p-1  bg-primary rounded-tl-lg border-l-2">
           <Link  to={ currentNote && Object.keys(currentNote).length !== 0 ? `/notes/${currentNote._id}` : '/notes'}>
-            <Icon
+         <Tooltip label='Notes' fontSize='xs'>
+          <div className="h-fit w-fit">
+             <Icon
               as={TbNotes}
               className="text-3xl cursor-pointer"
               style={{ color: location.pathname.startsWith('/notes') && "red" }}
             />
+          </div>
+          </Tooltip>
           </Link>
         </div>
       </footer>
