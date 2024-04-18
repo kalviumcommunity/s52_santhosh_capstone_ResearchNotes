@@ -3,7 +3,8 @@ import { createSlice, current } from "@reduxjs/toolkit";
 const initialState = {
   collection : [],
   currentNote : {},
-  splitMode : false
+  splitMode : false,
+  editMode : false,
 };
 
 const noteSlice = createSlice({
@@ -16,11 +17,14 @@ const noteSlice = createSlice({
    addCurrentNote(state,action){
         state.currentNote = action.payload
    },
-   changeMode(state,action){
+   changeSplitMode(state,action){
         state.splitMode = action.payload
-   }
+   },
+   changeEditMode(state,action){
+     state.editMode = action.payload
+   },
   }
 });
 
-export const {addNotes, addCurrentNote, changeMode} = noteSlice.actions;
+export const {addNotes, addCurrentNote, changeSplitMode, changeEditMode} = noteSlice.actions;
 export default noteSlice.reducer;

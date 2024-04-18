@@ -96,7 +96,8 @@ useEffect(()=>{
  
 
   return (
-    <div className="h-full flex flex-wrap p-8">
+    <div className="h-full flex flex-wrap p-8 relative">
+      <p className="absolute font-itim top-2 text-gray-600">Totally <span className="text-red-500">{collection?.length-1}</span> notes found...</p>
       {collection &&
         Array.isArray(collection) &&
         collection.length !== 0 &&
@@ -107,6 +108,7 @@ useEffect(()=>{
               key={ind}
               className={`h-48 w-40 ${note?.color} m-6 rounded-tl-3xl rounded-md shadow-xl shadow-gray-400 hover:shadow-gray-500 transition-shadow duration-300 cursor-pointer relative`}
             >
+              
               <Link to={`/notes/${note._id}`} state={note} >
               {!note.new ? (
                 <>

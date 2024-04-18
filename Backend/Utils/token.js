@@ -15,11 +15,17 @@ const generateToken = async (res, userId, expiry = null) => {
     res.cookie('accessToken', accessToken, {
       maxAge: 3600000 * 24 * 30,  //30 days
       httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      partitioned: true,
     });
 
     res.cookie('refreshToken', refreshToken, {
       maxAge: 3600000 * 24 * 30,  //30 days
       httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      partitioned: true,
     });
   } catch (error) {
     console.error('Error generating tokens:', error);

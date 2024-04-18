@@ -55,7 +55,7 @@ const Login = () => {
                 isClosable: true,
                 position: 'top-right',
             })
-            setAuthModal(false)
+            setAuthModal(false) 
         })
           .catch((err)=>{
             // console.log(err)
