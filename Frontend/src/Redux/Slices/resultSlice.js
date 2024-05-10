@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   query: '',
   results:{},
+  viewer:{}
 };
 
 const resultSlice = createSlice({
@@ -16,9 +17,12 @@ const resultSlice = createSlice({
     },
     addQuery(state,action){
       state.query = action.payload;
-    }
+    },
+    setViewer(state,action){
+      state.viewer = action.payload;
+    }  
   }
 });
 
-export const {addResults,addQuery} = resultSlice.actions;
+export const {addResults,addQuery,setViewer} = resultSlice.actions;
 export default resultSlice.reducer;

@@ -26,6 +26,7 @@ export default {
         island:['Island Moments','sans-serif'],
         inika:['Inika','sans-serif'],
         itim: ['Itim', 'sans-serif'],
+        Unbounded : ['Unbounded','sans-serif'],
         serif : ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman'],
       },
       

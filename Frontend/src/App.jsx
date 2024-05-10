@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Search from "./components/Search";
+import Search from "./components/search/Search";
 import { Avatar, Icon, Spinner, Tooltip, useToast } from "@chakra-ui/react";
 import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
-import Notes from "./components/Notes";
+import Notes from "./components/note/Notes";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
 import UserAuthModal from "./components/user/UserAuthModal";
 import { useSelector,useDispatch } from "react-redux";
@@ -12,20 +12,22 @@ import { addUserData } from "./Redux/Slices/userSlice";
 import { BsArrowRight } from "react-icons/bs";
 import Profile from "./components/user/Profile";
 import './App.css'
-import Editor from "./components/Editor";
+import Editor from "./components/note/Editor";
 import { PiSquareSplitHorizontal } from "react-icons/pi";
 import { changeSplitMode } from "./Redux/Slices/noteSlice";
+import Viewer from "./components/search/Viewer";
 
 
 function App() {
     const location = useLocation()
     const [authModal, setAuthModal] = useState(false);
+    const [viewModal, setViewModal] = useState(false);
     const [profileModal, setProfileModal] = useState(false);
     const [returnUser, setReturnUser] = useState(true);
     const [authLoading, setAuthLoading] = useState(false);
 
     const userData = useSelector(state=>state.userData)
-    const {results} = useSelector(state=>state.resultData)
+    const {viewer} = useSelector(state=>state.resultData)
     const { currentNote, splitMode } = useSelector((state) => state.noteData)
 
     const dispatch = useDispatch()
@@ -52,6 +54,10 @@ function App() {
       }
     }
 
+    useEffect(()=>{
+      handleAuth()
+    },[])
+
     const handleSplit = () => {
       if(currentNote && Object.keys(currentNote).length !== 0){
         dispatch(changeSplitMode(!splitMode))
@@ -66,14 +72,29 @@ function App() {
       }
     }
 
+
    const handleHeight = {
         height : splitMode ? "calc(100vh - 5rem)" : 'calc(100vh - 7.5rem)'
     }
+
+    useEffect(() => {
+        if (viewer?.show==true){
+          setViewModal(true)
+        }else{
+          setViewModal(false)
+        }
+    },[viewer])
+
 
   return (
     <div className="h-screen">
       {/* signup & login modal */}
       <UserAuthModal authModal={authModal} setAuthModal={setAuthModal} />
+
+      {/* zoom view modal */}{
+        viewModal && 
+      <Viewer viewModal={viewModal} setViewModal={setViewModal}/>
+      }
 
       {/* profile modal */}
       <Profile profileModal={profileModal} setProfileModal={setProfileModal} />
@@ -129,7 +150,7 @@ function App() {
           (
             <div style={handleHeight}  className="flex" >
                 <div className="h-full w-3/6 resize-x overflow-auto resizable-area cursor-default min-w-[50vw] ">
-                  <Search setAuthModal={setAuthModal} />
+                  <Search setAuthModal={setAuthModal} authLoading={authLoading} />
                 </div>
                 <div
                 className="h-full flex-grow"
@@ -140,9 +161,9 @@ function App() {
           ) : (
       <div style={handleHeight}>
         <Routes>
-          <Route path="*" element={<Search setAuthModal={setAuthModal} />} />
+          <Route path="*" element={<Search setAuthModal={setAuthModal} authLoading={authLoading} />} />
           <Route path="/notes" element={<Notes authLoading={authLoading} handleAuth={handleAuth} />} />
-          <Route path="/notes/:id" element={<Editor />} />
+          <Route path="/notes/:id" element={<Editor/>} />
         </Routes>
       </div>
           )
@@ -157,7 +178,7 @@ function App() {
             <Icon
               as={IoMdSearch}
               className="text-4xl cursor-pointer"
-              style={{ color: location.pathname==='/' && "red" }}
+              style={{ color: location.pathname==='/' || location.pathname==='/search' && "red" }}
             />
             </div>
             </Tooltip>

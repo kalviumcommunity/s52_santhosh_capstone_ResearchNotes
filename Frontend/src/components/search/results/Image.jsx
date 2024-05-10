@@ -1,13 +1,17 @@
 import React from 'react';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setViewer } from '../../../Redux/Slices/resultSlice';
 
 
 function Image() {
 
   const { results, query } = useSelector((state) => state.resultData);
+  const dispatch = useDispatch()
 
   
-    // console.log(results.images)
+    const handleView = (index) => {
+      dispatch(setViewer({show:true,content:'images',current:index}))
+    }
 
   return (
     <div className='h-full w-full flex overflow-x-scroll'>
@@ -19,7 +23,8 @@ function Image() {
                 key={index}
                 src={image.urls.small}
                 alt="query"
-                className='h-full max-w-40 object-cover border-2 border-black rounded-md mx-2'
+                className='h-full max-w-40 object-cover border-2 border-black rounded-md mx-2 cursor-pointer'
+                onClick={()=>handleView(index)}
               />
             );
           })

@@ -12,21 +12,22 @@ const generateToken = async (res, userId, expiry = null) => {
     const refreshToken = await jwtSign({ _id: userId }, process.env.JWT_REFRESH_TOKEN_SECRET, 
       { expiresIn: expiry ? expiry : process.env.REFRESH_TOKEN_EXPIRY });
 
-    res.cookie('accessToken', accessToken, {
-      maxAge: 3600000 * 24 * 30,  //30 days
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      partitioned: true,
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: 3600000 * 24 * 30,  //30 days
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      partitioned: true,
-    });
+      res.cookie('accessToken', accessToken, {
+        maxAge: 3600000 * 24 * 30,  // 30 days
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        // domain: '.onrender.com', 
+      });
+      
+      res.cookie('refreshToken', refreshToken, {
+        maxAge: 3600000 * 24 * 30,  // 30 days
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        // domain: '.onrender.com', 
+      });
+      
   } catch (error) {
     console.error('Error generating tokens:', error);
     throw error;

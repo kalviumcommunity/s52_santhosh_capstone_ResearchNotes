@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Icon , Tooltip } from '@chakra-ui/react';
 import { IoMdSearch } from "react-icons/io";
-import '../App.css';
 import { useSelector , useDispatch} from 'react-redux';
-import { addQuery } from "../Redux/Slices/resultSlice";
+import { addQuery } from "../../Redux/Slices/resultSlice";
 import Youtube from "./results/Youtube";
-import useHandleFetchResults from '../utlis/helper';
-import '../App.css';
+import useHandleFetchResults from '../../utlis/helper';
 import Meaning from "./results/Meaning";
 import Image from "./results/Image";
 import Site from "./results/Site";
 import useTypewriter from 'react-typewriter-hook';
+import '../../App.css'
 
 
-function Search({setAuthModal}) {
+function Search({setAuthModal,authLoading}) {
 
   const [search,setSearch] = useState(false)
   const [startType,setStartType] = useState(false)
@@ -34,7 +33,9 @@ const handleChange=(e)=> {
     setStartType(true)
     dispatch(addQuery(e.target.value))
   }else{
-    setAuthModal(true)
+    if(!authLoading){
+      setAuthModal(true)
+    }
   }
 } 
 
@@ -54,7 +55,7 @@ const handleHeight = {
 
 
   return (  
-    <div className={`flex ${results.okay ? "" :'flex-col'} items-center justify-center h-full`}>
+    <div className={`flex ${results.okay ? "" :'flex-col'} items-center justify-center h-full max-w-[1800px] m-auto`}>
       <div className={`${startType || results.okay ? 'absolute top-4 m-auto' : "top-10" } 
       ${splitMode && 'right-1/3'} transition-all duration-300 flex items-center`}>
       <input id="search-bar" className={` border-2  ${results.okay ? 'border-primary' : 'border-black'} h-12 md:w-96 xs:w-80 rounded-full pl-5 pr-16 font-bold focus:outline-none`} type="text" placeholder="Search the entire web..."
@@ -79,17 +80,17 @@ const handleHeight = {
       </> : 
       <>
       <div className={`${splitMode ? 'w-1/2' : 'w-4/6'} h-full  m-1 flex flex-col`}>
-        <div className={` ${splitMode ? 'h-40' : 'h-32' } w-full  bg-secondary rounded-md p-1 shadow-lg `}>
+        <div className={` ${splitMode ? 'h-40' : 'h-32' } w-full  bg-secondary rounded-md p-1`}>
           <Meaning />
         </div>
-        <div className={` ${splitMode ? 'h-32' : 'h-40' } md:p-2 xs:p-4 bg-secondary rounded-md my-1 shadow-lg `}>
+        <div className={` ${splitMode ? 'h-32' : 'h-40' } md:p-2 xs:p-4 bg-secondary rounded-md my-1`}>
           <Image />
         </div>
-        <div style={handleHeight} className="w-full p-2 bg-secondary rounded-md">
+        <div style={handleHeight} className="w-full p-2 bg-secondary rounded-md flex-grow">
             <Site />
         </div>
       </div>
-      <div className={`${splitMode ? 'w-1/2' : 'w-1/3'} h-full shadow-xl py-2 bg-secondary rounded-md `}>
+      <div className={`${splitMode ? 'w-1/2' : 'w-1/3'} mr-1 h-full shadow-xl py-2 bg-secondary rounded-md `}>
           <Youtube />
       </div>
       </>
