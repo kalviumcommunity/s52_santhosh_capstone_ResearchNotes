@@ -16,6 +16,7 @@ const handlePostNote = async (req,res) => {
     try{
         const userId =  req.userId;
         const {title,content} =req.body
+        console.log(req.body)
         const note = await noteModel.create({title,content,writer:userId})
         res.status(200).send(note)
     }catch(err){
@@ -29,7 +30,8 @@ const handleUpdateNote = async (req,res) => {
     if (req.body.title) updateFields.title = req.body.title;
     if (req.body.content) updateFields.content = req.body.content;
     try{
-        const note = await noteModel.findByIdAndUpdate(req.params.noteId, updateFields, { new: true });
+        // console.log(updateFields)
+        const note = await noteModel.findByIdAndUpdate(req.params.id, updateFields, { new: true });
         res.status(200).send(note)
     }catch(err){
         res.status(400).json({error:err.message})
@@ -39,7 +41,7 @@ const handleUpdateNote = async (req,res) => {
 
 const handleDeleteNote = async (req, res) => {
     try {
-        const deletedNote = await noteModel.findByIdAndDelete(req.params.noteId);
+        const deletedNote = await noteModel.findByIdAndDelete(req.params.id);
         if (!deletedNote) {
             return res.status(404).json({ error: 'Note not found' });
         }

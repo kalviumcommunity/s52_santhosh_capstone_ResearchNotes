@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
 import { AuthContext } from "./UserAuthModal";
 import { Avatar, Icon,useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 function Otp() {
   const { setloading, setAuthModal,setPage,tempUserInfo, setTempUserInfo } = useContext(AuthContext);
@@ -13,6 +14,8 @@ function Otp() {
  
   const toast = useToast();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   function handleSubmit() {
     setloading(true)
@@ -127,7 +130,7 @@ function Otp() {
       <h1 className="text-red-500 text-sm">{tempUserInfo.email}</h1>
 
       <input
-        className="h-10 w-4/6 rounded-sm border border-gray-700 mt-10 text-primary font-bold font-serif text-center text-2xl"
+        className="focus:outline-none  h-10 w-4/6 rounded-sm border border-gray-700 mt-10 text-primary font-bold font-serif text-center text-2xl"
         type="number"
         placeholder="enter your otp"
         onChange={(e) => setotp(e.target.value)}

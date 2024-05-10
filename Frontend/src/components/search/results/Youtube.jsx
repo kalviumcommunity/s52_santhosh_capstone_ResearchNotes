@@ -1,14 +1,23 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Text, Button, Heading } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
+import { setViewer } from "../../../Redux/Slices/resultSlice";
 
 function Youtube() {
 
   const { results } = useSelector((state) => state.resultData);
   const {splitMode} = useSelector(state=>state.noteData)
+  const dispatch = useDispatch()
 
+  const handleView = (index) => {
+    dispatch(setViewer({show:true,content:'videos',current:index}))
+  }
+
+  const handleDragStart = (event, videoId) => {
+    event.dataTransfer.setData("text/plain", videoId);
+  };
 
   return (
     <div className="h-full w-full  overflow-y-scroll">
@@ -23,7 +32,9 @@ function Youtube() {
               <img
                 src={video.snippet.thumbnails.medium.url}
                 alt="thumbnail"
-                className={`${splitMode ? 'h-24' : 'h-28'} p-2 rounded-sm`}
+                className={`${splitMode ? 'h-24' : 'h-28'} p-2 rounded-sm cursor-pointer`}
+                onClick={()=>handleView(index)}
+                onDragStart={(e)=>handleDragStart(e,video?.id?.videoId)}
               />
               <div className="flex-grow">
                 <Heading noOfLines={2} fontSize="small" >

@@ -1,23 +1,31 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { addNotes } from "../Redux/Slices/noteSlice";
+import { addNotes, addCurrentNote, changeEditMode } from "../../Redux/Slices/noteSlice";
 import { BsPinAngleFill , BsArrowRight , BsPlusSquareDotted } from "react-icons/bs";
 import { Text, Spinner } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
 import useTypewriter from 'react-typewriter-hook';
-import { Link, Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Notes({authLoading,handleAuth}) {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-  const { collection } = useSelector((state) => state.noteData);
+  const { collection,editMode } = useSelector((state) => state.noteData);
   const { isLogged } = useSelector((state) => state.userData);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // console.log(collection)
   const text = "Upgrade Your Note-Taking Experience";
   const typedText = useTypewriter(text);
+
+  const colors = [
+    "bg-amber-200",
+    "bg-blue-200",
+    "bg-green-200",
+    "bg-pink-200",
+    "bg-purple-200",
+  ];
 
   const handleFetchNotes = () => {
     if (collection?.length === 0 && isLogged) {
@@ -25,31 +33,32 @@ function Notes({authLoading,handleAuth}) {
         .get(`${BASE_URL}/get-notes`, {
           withCredentials: true,
         })
-        .then((res) => dispatch(addNotes([...res.data,{new:true,_id:'new'}])))
+        .then((res) => {
+          const coloredNotes = [...res.data,{new:true,_id:'new'}].map((note,index)=>{
+            const randomColor = colors[index % colors.length]
+            return {...note,color:randomColor}
+          })
+          dispatch(addNotes(coloredNotes))
+        })
         .catch((error) => console.log(error));
     }
+  }
+
+  const handleCurrentNote = (note) => {
+    dispatch(addCurrentNote(note))
+    navigate(`/notes/${note._id}`)
   }
 
   useEffect(() => {
     handleFetchNotes()
   }, [isLogged]);
 
-useEffect(()=>{
-  if(isLogged && collection && collection.length !== 0 && !collection[0].color){
-    const colors = [
-      "bg-amber-200",
-      "bg-blue-300",
-      "bg-green-300",
-      "bg-pink-300",
-      "bg-purple-300",
-    ];
-    const coloredNotes = collection.map((note,index)=>{
-      const randomColor = colors[index >= colors.length ? index-colors.length : index];
-      return {...note,color:randomColor}
-    })
-    dispatch(addNotes(coloredNotes))
-  }
-})
+  useEffect(()=>{
+    if(isLogged){
+      dispatch(addCurrentNote({}))
+      if(editMode == true){dispatch(changeEditMode(false))}
+    }
+  },[])
 
   if (!isLogged) {
     return (
@@ -93,10 +102,8 @@ useEffect(()=>{
     )
   }
 
- 
-
   return (
-    <div className="h-full flex flex-wrap p-8 relative">
+    <div className="h-full flex flex-wrap p-8 relative overflow-y-scroll">
       <p className="absolute font-itim top-2 text-gray-600">Totally <span className="text-red-500">{collection?.length-1}</span> notes found...</p>
       {collection &&
         Array.isArray(collection) &&
@@ -105,11 +112,11 @@ useEffect(()=>{
 
           return (
             <div
-              key={ind}
-              className={`h-48 w-40 ${note?.color} m-6 rounded-tl-3xl rounded-md shadow-xl shadow-gray-400 hover:shadow-gray-500 transition-shadow duration-300 cursor-pointer relative`}
+              key={note._id}
+              className={`h-48 w-40 ${note?.color} m-5 rounded-tl-3xl rounded-md shadow-xl shadow-gray-400 hover:shadow-gray-500 transition-shadow duration-300 cursor-pointer relative select-none`}
+              onClick={()=>handleCurrentNote(note)}
             >
               
-              <Link to={`/notes/${note._id}`} state={note} >
               {!note.new ? (
                 <>
                   <div className="absolute top-2 right-2 z-10">
@@ -124,9 +131,8 @@ useEffect(()=>{
                       noOfLines={1}
                       fontSize="small"
                       className="font-semibold px-1"
-                    >
-                      {note.title}
-                    </Text>
+                      dangerouslySetInnerHTML={{ __html: note.title}}
+                    ></Text>
                   </div>
                   <Text
                     noOfLines={1}
@@ -146,7 +152,6 @@ useEffect(()=>{
                   <p className="font-bold">Add New</p>
                 </div>
               )}
-              </Link>
             </div>
           );
         })

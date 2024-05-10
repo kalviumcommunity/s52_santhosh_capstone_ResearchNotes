@@ -90,7 +90,7 @@ const Login = () => {
           id="email"
           className={`bg-transparent border ${
             errors.email ? "border-red-500" : "border-gray-400"
-          } h-10 w-full rounded-sm pl-2`}
+          } h-10 w-full rounded-sm pl-2 focus:outline-none `}
           placeholder="example@domain.com"
           {...register("email", { required: "mail id required" })}
         />
@@ -110,7 +110,7 @@ const Login = () => {
           id="password"
           className={`bg-transparent border ${
             errors.password ? "border-red-500" : "border-gray-400"
-          } h-10 w-full rounded-sm font-thin pl-2`}
+          } h-10 w-full rounded-sm font-thin pl-2 focus:outline-none `}
           placeholder="example123#"
           {...register("password", {
             required: "password is required",
