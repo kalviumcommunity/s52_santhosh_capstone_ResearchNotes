@@ -3,8 +3,9 @@ import axios from "axios";
 import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
 import { AuthContext } from "./UserAuthModal";
-import { Avatar, Icon,useToast } from "@chakra-ui/react";
+import { Avatar, Icon } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 function Otp() {
   const { setloading, setAuthModal,setPage,tempUserInfo, setTempUserInfo } = useContext(AuthContext);
@@ -12,10 +13,10 @@ function Otp() {
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
  
-  const toast = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // console.log(tempUserInfo)
 
   function handleSubmit() {
     setloading(true)
@@ -34,14 +35,7 @@ function Otp() {
           }else{
             dispatch(addUserData({...res.data.data}))
           }
-          // console.log(res.data);
-          toast({
-            description: res.data.message,
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            position: "top-right",
-          });
+          toast.success(res.data.message)
           if(tempUserInfo.avatar){
             const formData = new FormData;
             formData.append('avatar',tempUserInfo.avatar)
@@ -57,29 +51,16 @@ function Otp() {
               dispatch(addUserData({...avatarRes.data.data}))
             })
             .catch((err)=>{
-              toast({
-                description: err.response.data.error,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-              });
+              toast.error( err.response.data.error)
             })
           }
           setAuthModal(false);
         })
         .catch((err) => {
-          console.log(err);
-          toast({
-            description: err.response.data.error,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-            position: "top-right",
-          });
+          toast.error( err.response.data.error)
         })
         .finally(()=>{
-          setTempUserInfo({})
+          // setTempUserInfo({})
           setloading(false)
         });
     }else{
@@ -93,13 +74,7 @@ function Otp() {
             setPage('signup');
         })
           .catch((err) => {
-            toast({
-              description: err.response.data.error,
-              status: "error",
-              duration: 3000,
-              isClosable: true,
-              position: "top-right",
-            });
+            toast.error( err.response.data.error)
           })
           .finally(()=>{
             setloading(false)

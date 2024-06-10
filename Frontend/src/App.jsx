@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Search from "./components/search/Search";
-import { Avatar, Icon, Spinner, Tooltip, useToast } from "@chakra-ui/react";
+import { Avatar, Icon, Spinner, Tooltip } from "@chakra-ui/react";
 import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/note/Notes";
@@ -13,9 +13,12 @@ import { BsArrowRight } from "react-icons/bs";
 import Profile from "./components/user/Profile";
 import './App.css'
 import Editor from "./components/note/Editor";
-import { PiSquareSplitHorizontal } from "react-icons/pi";
+import { PiSquareSplitHorizontalLight } from "react-icons/pi";
 import { changeSplitMode } from "./Redux/Slices/noteSlice";
 import Viewer from "./components/search/Viewer";
+import { CiLight, CiDark } from "react-icons/ci";
+import { changeTheme } from "./Redux/Slices/themeSlice";
+import toast, { Toaster } from 'react-hot-toast';
 
 
 function App() {
@@ -29,9 +32,10 @@ function App() {
     const userData = useSelector(state=>state.userData)
     const {viewer} = useSelector(state=>state.resultData)
     const { currentNote, splitMode } = useSelector((state) => state.noteData)
+    const {darkMode} = useSelector((state)=>state.theme)
+    
 
     const dispatch = useDispatch()
-    const toast = useToast()
 
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -59,19 +63,8 @@ function App() {
     },[])
 
     const handleSplit = () => {
-      if(currentNote && Object.keys(currentNote).length !== 0){
         dispatch(changeSplitMode(!splitMode))
-      }else{
-        toast({
-          description: 'Please open any note to split',
-          status: "warning",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-      }
     }
-
 
    const handleHeight = {
         height : splitMode ? "calc(100vh - 5rem)" : 'calc(100vh - 7.5rem)'
@@ -86,29 +79,50 @@ function App() {
     },[viewer])
 
 
+    
   return (
-    <div className="h-screen">
-      {/* signup & login modal */}
+    <div className={`${darkMode && 'bg-secondary'}`}>
+    {/* <div className="bg"></div> */}
+    <div className='top-0 h-screen w-full transition-all duration-500'>
+       <Toaster />
+      {/* signup & login modal */}{
+        authModal &&
       <UserAuthModal authModal={authModal} setAuthModal={setAuthModal} />
+      }
 
       {/* zoom view modal */}{
         viewModal && 
       <Viewer viewModal={viewModal} setViewModal={setViewModal}/>
       }
 
-      {/* profile modal */}
+      {/* profile modal */}{
+        profileModal && 
       <Profile profileModal={profileModal} setProfileModal={setProfileModal} />
+      }
 
-     <nav className="w-full flex justify-between items-center h-20 px-4 font-bold">
-      <h1 className="font-island text-4xl font-semibold text-gray-800">
+     <nav className="w-full flex justify-between items-center h-20 px-4 font-bold z-20">
+      <h1 className={`font-island text-4xl font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>
         <span className="text-primary font-semibold">R</span>esearch
         <span className="text-primary font-semibold">N</span>otes
       </h1> 
-      <div>
+      <div className="flex place-items-center">
+        <div>
+        {
+          darkMode ? 
+          <CiLight 
+          className="text-white text-4xl mx-3 cursor-pointer hover:bg-gray-900 rounded-lg p-1" 
+          onClick={()=>dispatch(changeTheme())}
+          /> :
+          <CiDark 
+          className="text-black text-4xl font-bold mx-3 cursor-pointer hover:bg-gray-300 rounded-lg p-1"
+          onClick={()=>dispatch(changeTheme())}
+          />
+        }
+        </div>
       {
         !userData.isLogged ?
         <button 
-        className={`font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika flex justify-center items-center ${authLoading && "cursor-not-allowed"}`}
+        className={`font-extrabold text-white bg-primary px-4 py-2 rounded-lg border-2 border-primary font-inika flex justify-center items-center ${authLoading && "cursor-not-allowed select-none"}`}
         onClick={handleAuth}
         disabled={authLoading}
         >
@@ -118,33 +132,34 @@ function App() {
            authLoading ?
            <Spinner size='sm' /> :
            <BsArrowRight />  
-        }
+        } 
         </span>
       </button> : 
-       userData.values.profile !== "" ?
+       userData?.values?.profile !== "" ?
        <div className="flex justify-center items-center">
           {
             <Tooltip  label='Split Mode' fontSize='xs'>
-              <div className="w-fit h-fit mx-4">
-                <PiSquareSplitHorizontal className={`text-4xl font-bold shadow-2xl shadow-black ${currentNote && Object.keys(currentNote).length !== 0 ? 'cursor-pointer' : 'cursor-not-allowed'} ${splitMode ? 'text-primary' : 'text-gray-500'}`}
+              <div className="w-fit h-fit mr-4">
+                <PiSquareSplitHorizontalLight className={`text-4xl shadow-2xl shadow-black  ${splitMode ? 'text-primary' : 'text-gray-400'} cursor-pointer`}
                 onClick={handleSplit}
                 /> 
               </div>
             </Tooltip>
           }
           <Tooltip  label='profile' fontSize='xs'>
+            <div className="h-fit w-fit rounded-full border border-white">
          <img
-         src={userData.values.profile} 
-         className='h-12 w-12 rounded-full object-cover border-2 border-red-500 cursor-pointer'
+         src={userData?.values?.profile} 
+         className='h-11 w-11 rounded-full object-cover cursor-pointer select-none'
          onClick={()=>setProfileModal(true)}
          /> 
+            </div>
          </Tooltip>
        </div> :
-       <Avatar size='md' bg='tomato' name={userData.values.username} cursor='pointer' onClick={()=>setProfileModal(true)} />
+       <Avatar size='md' bg='tomato' name={userData?.values?.username} cursor='pointer' onClick={()=>setProfileModal(true)} />
       }
       </div>
       </nav>
-
         {
           splitMode ?
           (
@@ -155,8 +170,12 @@ function App() {
                 <div
                 className="h-full flex-grow"
                   >
-                  <Editor />
-                </div>
+                    {
+                      currentNote && Object.keys(currentNote).length === 0 ?
+                      <Notes authLoading={authLoading} handleAuth={handleAuth} /> :
+                      <Editor />
+                    }
+                </div>  
             </div>
           ) : (
       <div style={handleHeight}>
@@ -170,28 +189,28 @@ function App() {
         }
         {
        !splitMode && (
-          <footer className="flex fixed bottom-0 z-10 w-full h-10">
-        <div className="w-full flex items-center justify-center bg-primary rounded-tr-lg border-r-2">
+          <footer className="flex fixed bottom-0 z-10 w-full h-10 text-gray-600">
+        <div className="w-full flex items-center justify-center bg-primary rounded-tr-lg mr-[1px]">
           <Link to="/search">
           <Tooltip label='Search' fontSize='xs'>
           <div className="h-fit w-fit"> 
             <Icon
               as={IoMdSearch}
               className="text-4xl cursor-pointer"
-              style={{ color: location.pathname==='/' || location.pathname==='/search' && "red" }}
+              style={{ color: location.pathname==='/' || location.pathname==='/search' ? "black" : '' }}
             />
-            </div>
+            </div>  
             </Tooltip>
           </Link>
         </div>
-        <div className="w-full flex items-center justify-center p-1  bg-primary rounded-tl-lg border-l-2">
+        <div className="w-full flex items-center justify-center p-1  bg-primary rounded-tl-lg ml-[1px]">
           <Link  to={ currentNote && Object.keys(currentNote).length !== 0 ? `/notes/${currentNote._id}` : '/notes'}>
          <Tooltip label='Notes' fontSize='xs'>
           <div className="h-fit w-fit">
              <Icon
               as={TbNotes}
               className="text-3xl cursor-pointer"
-              style={{ color: location.pathname.startsWith('/notes') && "red" }}
+              style={{ color: location.pathname.startsWith('/notes') && "black" }}
             />
           </div>
           </Tooltip>
@@ -200,6 +219,7 @@ function App() {
       </footer>
        )
       }
+    </div>
     </div>
   );
 }

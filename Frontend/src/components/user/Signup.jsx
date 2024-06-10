@@ -1,11 +1,12 @@
 import {useForm} from 'react-hook-form'
 import axios from 'axios';
-import { useToast } from '@chakra-ui/react'
 import { useState,useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
 import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
 import UserAvatar from './UserAvatar';
+import toast from 'react-hot-toast';
+
 
 
 const Signup = () => {
@@ -16,20 +17,13 @@ const Signup = () => {
   const [avatar, setAvatar] = useState('');
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-    const toast = useToast()
     const dispatch = useDispatch()
 
     function handleAvatarChange(e) {
       const image = e.target.files[0];
       if (image) {
           if (image.size >  (1024 * 1024 * 2)) {
-             toast({
-              description: 'Please select a smaller image (less than 2MB)',
-              status: 'warning',
-              duration: 3000,
-              isClosable: true,
-              position: 'top-right'
-             })
+             toast.error('Please select a smaller image (less than 2MB)')
               e.target.value = null;
           } else {
               setAvatar(image);
@@ -57,14 +51,7 @@ const Signup = () => {
           if (err.response.status === 409) {
             setError('email', { message: err.response.data.error });
           }
-      
-          toast({
-            description: err.response.data.error,
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-            position: 'top-right'
-          });
+          toast.error( err.response.data.error)
         })
         .finally(()=>{
           setloading(false)
@@ -82,14 +69,7 @@ const Signup = () => {
           setAuthModal(false)
         })
         .catch((err)=>{
-          // console.log(err)
-          toast({
-            description: err.response.data.error,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-            position: "top-right",
-          });
+          toast.error( err.response.data.error)
         })
         .finally(()=>{
           setloading(false)

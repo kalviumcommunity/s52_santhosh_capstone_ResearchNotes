@@ -6,6 +6,7 @@ import { setViewer } from '../../../Redux/Slices/resultSlice';
 function Image() {
 
   const { results, query } = useSelector((state) => state.resultData);
+  const { darkMode } = useSelector((state) => state.theme);
   const dispatch = useDispatch()
 
   
@@ -14,7 +15,7 @@ function Image() {
     }
 
   return (
-    <div className='h-full w-full flex overflow-x-scroll'>
+    <div className='h-full w-full flex overflow-x-scroll scroll-hide '>
     {
       results.images && results.images.length !== 0
         ? results.images.map((image, index) => {
@@ -23,7 +24,8 @@ function Image() {
                 key={index}
                 src={image.urls.small}
                 alt="query"
-                className='h-full max-w-40 object-cover border-2 border-black rounded-md mx-2 cursor-pointer'
+                className='h-full max-w-40 object-cover rounded-md mx-2 cursor-pointer'
+                style={{ border: darkMode ? '2px solid #1a2125' : '2px solid white' }}
                 onClick={()=>handleView(index)}
               />
             );

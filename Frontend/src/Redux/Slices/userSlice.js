@@ -13,12 +13,12 @@ const userSlice = createSlice({
       state.isLogged = true;
       state.values = action.payload;
     },
-    deleteUserData(state,action){
+    resetUser(state,action){
       state.isLogged = false;
       state.values = {};
     }
   }
 });
 
-export const {addUserData,deleteUserData} = userSlice.actions;
+export const {addUserData,resetUser} = userSlice.actions;
 export default userSlice.reducer;

@@ -22,28 +22,6 @@
 - User-Friendly Interface: 🖥️ ResearchNotes offers a user-friendly interface with customizable themes.
 
 
-## **Daily Plan**
-
-### *Day 1*
-
-- Setup github repository  - 15 mins
-- Initiate the project with readme  - 15 mins
-- Low-fid design - 3 hours
-
-### *Day 2*
-
-
-- High-fid design - 3 hours
-- Researching Schema - 3 hours
-- Finding relevant API’s - 4 hours
-
-
-### *Day 3*
-
-- Setup back-end - 20 mins
-- Setup front-end - 20 mins
-- Create landing page - 3 hrs
-
 
 ## Getting Started 🌟
 
@@ -60,3 +38,7 @@ To set up and run the project locally, follow these steps:
 🎉 We're thrilled to welcome contributions! 🌟 Join us in making ResearchNotes even better by sharing your resources and insights. Together, we can create a comprehensive hub for knowledge seekers everywhere. 🚀
 
 
+## Deploy 
+
+**Front-end** : https://researchnote.onrender.com/
+**Back-end** :  https://researchnotes.onrender.com/

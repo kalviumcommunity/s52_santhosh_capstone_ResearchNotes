@@ -52,6 +52,12 @@ const noteSlice = createSlice({
     saveLoading(state, action) {
       state.currentNote.loading = action.payload;
     },
+    resetNotes(state,action){
+      state.collection = [],
+      state.currentNote = {},
+      state.splitMode = false,
+      state.editMode = false
+    },
   },
 });
 
@@ -65,5 +71,6 @@ export const {
   updateSingleNote,
   saveLoading,
   deleteSingleNote,
+  resetNotes
 } = noteSlice.actions;
 export default noteSlice.reducer;

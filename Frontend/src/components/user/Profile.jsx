@@ -7,21 +7,25 @@ import {
     DrawerOverlay,
     DrawerContent,
     DrawerCloseButton,
-    useToast,
     Button
   } from '@chakra-ui/react'
 import UserAvatar from './UserAvatar';
 import { useSelector , useDispatch} from 'react-redux';
 import { MdLogout } from "react-icons/md";
 import axios from 'axios';
-import { deleteUserData } from '../../Redux/Slices/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { resetUser } from '../../Redux/Slices/userSlice';
+import { resetResults } from '../../Redux/Slices/resultSlice';
+import { resetNotes } from '../../Redux/Slices/noteSlice';
+import toast from 'react-hot-toast';
+
 
 
 function Profile({profileModal,setProfileModal}) {
     const userData = useSelector(state=>state.userData)
+    const {darkMode} = useSelector(state=>state.theme)
 
-    const toast = useToast()
+  
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -33,23 +37,18 @@ const handleLogout = () => {
     })
     .then((res)=>{
       navigate('/')
-      dispatch(deleteUserData())
+      dispatch(resetUser())
+      dispatch(resetNotes())
+      dispatch(resetResults())
       setProfileModal(false)
     })
     .catch((err)=>{
-      console.log(err)
-      toast({
-        description: err.message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
+      toast.error(err.message)
     })
 }
 
   return (
-    <div>
+    <div >
        <Drawer
         isOpen={profileModal}
         placement='right'
@@ -57,21 +56,21 @@ const handleLogout = () => {
         size='sm'
       >
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent bg={darkMode ? '#1a2125' : 'white'}>
           <DrawerCloseButton color="red" size="lg" zIndex={20} />
           <DrawerHeader>
           <h1 className='text-primary font-bold my-2 text-2xl'>Profile</h1>
           </DrawerHeader>
 
           <DrawerBody>
-            <div className='h-32 w-32 m-auto'>
-            <UserAvatar avatar={userData.values.profile} userName={userData.values.username}  />
-            </div>
+            <img  
+             style={{ border: darkMode ? '2px solid white' : '2px solid black' }}
+            className={`h-32 w-32 m-auto rounded-full`}  src={userData?.values?.profile} alt={userData?.values?.username}  />
           </DrawerBody>
  
           <DrawerFooter>
             <Button rightIcon={<MdLogout />} colorScheme='red' onClick={handleLogout}>
-              Logout 
+              Logout
             </Button>
           </DrawerFooter>
         </DrawerContent>

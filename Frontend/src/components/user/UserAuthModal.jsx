@@ -6,7 +6,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  useToast,
   Progress
 } from "@chakra-ui/react";
 import Otp from "./Otp";
@@ -16,6 +15,7 @@ import { signInWithPopup } from "firebase/auth"
 import {auth,provider} from '../../google/config'
 import {useDispatch} from 'react-redux'
 import { addUserData } from "../../Redux/Slices/userSlice";
+import toast from 'react-hot-toast';
 
 export const AuthContext = createContext(null);
 
@@ -25,7 +25,6 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
   const [page, setPage] = useState('login')
 
   const dispatch = useDispatch();
-  const toast = useToast();
 
 
   const handleGoogleSignIn = () => {
@@ -38,28 +37,14 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
         email:result.user.email,
         profile:result.user.photoURL,
       }))
-      toast({
-        description:'logged in successfully',
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
+      toast.success('logged in successfully')
       setAuthModal(false)
     }).catch((err)=>{
-      toast({
-        description:'something went wrong',
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
-      console.error(err.message)
+      toast.error('something went wrong')
     })
     .finally(()=>{
       setloading(false)
     })
-    
   };
 
   return (

@@ -16,7 +16,6 @@ const handlePostNote = async (req,res) => {
     try{
         const userId =  req.userId;
         const {title,content} =req.body
-        console.log(req.body)
         const note = await noteModel.create({title,content,writer:userId})
         res.status(200).send(note)
     }catch(err){
