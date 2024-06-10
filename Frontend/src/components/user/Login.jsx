@@ -1,10 +1,10 @@
 import {useForm} from 'react-hook-form'
-import { useToast } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux/Slices/userSlice';
 import axios from 'axios';
 import { useState, useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
+import toast from 'react-hot-toast';
 
 const Login = () => {
 
@@ -12,7 +12,6 @@ const Login = () => {
 
     const [forgotPassword,setForgotPassword] = useState(false)
     const {register, handleSubmit, formState: { errors}, watch, setError} = useForm();
-    const toast = useToast()
     const dispatch = useDispatch()
     
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -26,14 +25,7 @@ const Login = () => {
           setPage('otp')
         })
         .catch((err)=>{ 
-          console.log(err)
-          toast({
-            description: err.response.data.error,
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-            position: 'top-right',
-          })
+          toast.error(err.response.data.error)
         })
         .finally(()=>{
           setloading(false)
@@ -48,26 +40,14 @@ const Login = () => {
           .then((res)=>{
             // console.log(res.data)
             dispatch(addUserData(res.data.data))
-            toast({
-                description:res.data.message,
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-                position: 'top-right',
-            })
+            toast.success(res.data.message)
             setAuthModal(false) 
         })
           .catch((err)=>{
             // console.log(err)
             if(err.response.status==401)  setError('email', { message: err.response.data.error });
             if(err.response.status==403)  setError('password', { message: err.response.data.error });
-            toast({
-              description: err.response.data.error,
-              status: 'error',
-              duration: 3000,
-              isClosable: true,
-              position: 'top-right',
-            })
+            toast.error( err.response.data.error)
           })
           .finally(()=>{
             setloading(false)

@@ -5,19 +5,18 @@ import { Text } from "@chakra-ui/react";
 function Site() {
   const { results } = useSelector((state) => state.resultData);
   const {splitMode} = useSelector(state=>state.noteData)
+  const {darkMode} = useSelector(state=>state.theme)
 
-
-  // console.log(results.sites);
 
   return (
-    <div className="h-full w-full overflow-y-scroll">
+    <div className="h-full w-full overflow-y-scroll scroll-hide ">
       {results.sites &&
         results.sites.length !== 0 ?
         results.sites.map((site, index) => {
           return (
             <div
               key={index}
-              className="flex items-start p-3 rounded-xl shadow-md bg-white hover:bg-gray-100 transition-colors duration-300"
+              className={`flex items-start p-3 rounded-xl shadow-md ${darkMode ? 'bg-secondary text-white' : 'bg-white text-black'} transition-colors duration-300 mb-1 h-24`}
             >
               <div className="flex-shrink-0 mr-4">
                 <img
@@ -32,7 +31,7 @@ function Site() {
               <div className="flex-grow">
                 <a
                   href={site.link}
-                  className="text-blue-600 font-medium hover:underline"
+                  className="text-primary font-medium hover:underline"
                   target="_blank"
                 >
                   <Text noOfLines={1} className="font-semibold" dangerouslySetInnerHTML={{ __html: site.htmlTitle }} >

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Text, Button, Heading } from "@chakra-ui/react";
+import { Text, Heading } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
 import { setViewer } from "../../../Redux/Slices/resultSlice";
@@ -9,6 +9,9 @@ function Youtube() {
 
   const { results } = useSelector((state) => state.resultData);
   const {splitMode} = useSelector(state=>state.noteData)
+  const {darkMode} = useSelector(state=>state.theme)
+
+
   const dispatch = useDispatch()
 
   const handleView = (index) => {
@@ -20,13 +23,13 @@ function Youtube() {
   };
 
   return (
-    <div className="h-full w-full  overflow-y-scroll">
+    <div className="h-full w-full  overflow-y-scroll scroll-hide ">
       {results.videos &&
         results.videos.length > 0 ?
         results.videos.map((video, index) => {
           return (
             <div
-              className="flex items-center md:m-2 xs:m-1 bg-white rounded-md box-border"
+              className={`flex items-center md:m-2 xs:m-1 ${darkMode ? 'bg-secondary text-white' : 'bg-white text-black'} rounded-md box-border`}
               key={index}
             >
               <img

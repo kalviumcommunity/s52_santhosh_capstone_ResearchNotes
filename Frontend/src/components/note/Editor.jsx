@@ -19,7 +19,6 @@ import {
   MenuList,
   MenuItem,
   Spinner,
-  useToast,
   Tooltip,
 } from "@chakra-ui/react";
 import { FiCopy } from "react-icons/fi";
@@ -29,6 +28,7 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import NoteTemplate from "../../utlis/noteHTML";
 import axios from "axios";
 import DeleteModal from "./DeleteModal";
+import toast from 'react-hot-toast';
 
 function Editor() {
   const { isLogged } = useSelector((state) => state.userData);
@@ -36,10 +36,8 @@ function Editor() {
     (state) => state.noteData
   );
 
-  const [initialNote, setInitialNote] = useState({
-    title: "",
-    content: "",
-  });
+  const [initialNote, setInitialNote] = useState({title: '',content: ''});
+  const currentNoteRef = useRef(currentNote);
   const [deleteModal, setDeleteModal] = useState(false);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -47,8 +45,14 @@ function Editor() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const toast = useToast();
   const iframeRef = useRef(null);
+
+
+  useEffect(() => {
+    currentNoteRef.current = currentNote;
+  }, [currentNote]);
+
+
 
   useEffect(() => {
     if (!isLogged) {
@@ -72,58 +76,43 @@ function Editor() {
     [initialNote, editMode]
   );
 
-const handleError = () => {
-  toast({
-    title: 'Network Error',
-    status: 'error',
-    duration: 3000,
-    isClosable: true,
-    position: 'top-right',
-  });
-};
-
-// console.log(currentNote.content)
 
 const saveNote = async (auto = true) => {
-  console.log('called')
   clearTimeout(autoSaveTimeout);
   if (currentNote?.loading) return;
 
-  dispatch(saveLoading(true));
-
   const requestData = {
-    title: currentNote.title,
-    content: currentNote.content,
+    title: currentNoteRef.current.title,
+    content: currentNoteRef.current.content,
   };
-  console.log(requestData)
+  // console.log(requestData)
+  
+  if(requestData.title == undefined || requestData.title == '' ||requestData.content == undefined || requestData.content == ''){
+    return;
+  }
+
+  dispatch(saveLoading(true));
 
   const config = {
     withCredentials: true,
   };
 
   try {
-    if (currentNote?.new) {
-      let newResponse = await axios.post(`${BASE_URL}/post-note`, requestData, config);
-      console.log('done')
-      dispatch(addCurrentNote({ ...newResponse.data, color: currentNote?.color }));
-      if (!auto) {
-        setInitialNote({ ...newResponse.data, color: currentNote?.color });
-        dispatch(updateSingleNote({ ...newResponse.data, color: currentNote?.color }));
-        dispatch(changeEditMode(false));
-      }
-      return;
+    let response;
+    if (currentNoteRef.current.new) {
+      // console.log('post')
+      response = await axios.post(`${BASE_URL}/post-note`, requestData, config);
+      dispatch(addCurrentNote({ ...response.data, color: currentNote?.color }));
     } else {
-      let updateResponse = await axios.patch(`${BASE_URL}/update-note/${currentNote._id}`, requestData, config);
+      response = await axios.patch(`${BASE_URL}/update-note/${currentNoteRef.current._id}`, requestData, config);
+    }
       if (!auto) {
-        setInitialNote({ ...updateResponse.data, color: currentNote?.color });
-        dispatch(updateSingleNote({ ...updateResponse.data, color: currentNote?.color }));
+        dispatch(updateSingleNote({ ...response.data, color: currentNote?.color }));
+        setInitialNote((prevNote) => ({...response.data,color: prevNote.color}));
         dispatch(changeEditMode(false));
       }
-      return;
-    }
   } catch (error) {
-    // console.log(error)
-    handleError();
+    toast.error('Network Error')
   } finally {
     dispatch(saveLoading(false));
   }
@@ -138,7 +127,6 @@ const saveNote = async (auto = true) => {
 
   const handleBack = () => {
     dispatch(addCurrentNote({}));
-    if(splitMode==true){dispatch(changeSplitMode(false))}
     if(editMode == true){dispatch(changeEditMode(false))}
     navigate("/notes");
   };
@@ -233,22 +221,19 @@ const saveNote = async (auto = true) => {
       })
       .then((res) => {
         dispatch(deleteSingleNote({ id: currentNote._id }));
+        
+        toast.success
         handleBack();
       })
       .catch((error) => {
-        console.log(error);
-        toast({
-          title: "Network Error",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
+        toast.error('Network Error')
       });
   };
 
+
   return (
     <div className="h-full flex justify-center items-center box-border">
+      {/* <Toaster /> */}
       {deleteModal && (
         <DeleteModal
           handleDelete={handleDelete}

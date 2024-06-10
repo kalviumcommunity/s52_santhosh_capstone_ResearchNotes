@@ -9,18 +9,19 @@ import Meaning from "./results/Meaning";
 import Image from "./results/Image";
 import Site from "./results/Site";
 import useTypewriter from 'react-typewriter-hook';
+import bgImage from '../../assets/global_without_bg.png'
 import '../../App.css'
 
 
 function Search({setAuthModal,authLoading}) {
 
   const [search,setSearch] = useState(false)
-  const [startType,setStartType] = useState(false)
   
   const dispatch = useDispatch()
   const {isLogged} = useSelector(state=>state.userData)
   const {results,query} = useSelector(state=>state.resultData)
   const {splitMode} = useSelector(state=>state.noteData)
+  const {darkMode} = useSelector(state=>state.theme)
   
   const {fetchVideos,fetchMeaning,fetchImages,fetchSites} = useHandleFetchResults(query)
 
@@ -29,14 +30,13 @@ function Search({setAuthModal,authLoading}) {
  
 
 const handleChange=(e)=> {
-  if(isLogged){
-    setStartType(true)
+  // if(isLogged){
     dispatch(addQuery(e.target.value))
-  }else{
-    if(!authLoading){
-      setAuthModal(true)
-    }
-  }
+  // }else{
+  //   if(!authLoading){
+  //     setAuthModal(true)
+  //   }
+  // }
 } 
 
 const handleSubmit = () => {
@@ -56,9 +56,10 @@ const handleHeight = {
 
   return (  
     <div className={`flex ${results.okay ? "" :'flex-col'} items-center justify-center h-full max-w-[1800px] m-auto`}>
-      <div className={`${startType || results.okay ? 'absolute top-4 m-auto' : "top-10" } 
+        {/* <img className="absolute z-[-1] spin" src={bgImage} alt="image" /> */}
+      <div className={`${query !== '' || results.okay ? 'absolute top-4 m-auto' : "top-12" } 
       ${splitMode && 'right-1/3'} transition-all duration-300 flex items-center`}>
-      <input id="search-bar" className={` border-2  ${results.okay ? 'border-primary' : 'border-black'} h-12 md:w-96 xs:w-80 rounded-full pl-5 pr-16 font-bold focus:outline-none`} type="text" placeholder="Search the entire web..."
+      <input id="search-bar" className={` border  ${darkMode ?  'border-white text-white' : 'border-black'} h-12 md:w-96 xs:w-80 rounded-full pl-5 pr-16 font-bold focus:outline-none bg-transparent`} type="text" placeholder="Search the entire web..."
       value={query} 
       onChange={handleChange}
       onKeyUp={(e)=>e.key=='Enter' && handleSubmit()}
@@ -71,26 +72,26 @@ const handleHeight = {
       </div>
       
       {
-         !results.okay ?
+         !results.okay ?  
          search ? <div className="loader"></div> : 
       <>
-      <h1 className={`font-bold ${splitMode ? 'text-3xl m-5 mt-10' : 'text-5xl m-10'} font-inika text-primary h-12 `}>U{typedText}<span className="font-thin animate-pulse">|</span></h1>
-        <p className={`text-center ${splitMode ? 'w-2/3' : 'w-1/3'} font-inika font-bold`}>
+      <h1 className={`font-bold ${splitMode ? 'text-3xl m-5 mt-10' : 'text-5xl m-10'} font-inika text-primary h-12`}>U{typedText}<span className="font-thin animate-pulse">|</span></h1>
+        <p className={`text-center ${splitMode ? 'w-2/3' : 'w-1/3'} font-inika ${darkMode ? 'text-white' : 'text-black font-semibold'}`}>
         Your go-to destination for comprehensive online research. Find, organize, and share resources effortlessly.</p>
       </> : 
       <>
       <div className={`${splitMode ? 'w-1/2' : 'w-4/6'} h-full  m-1 flex flex-col`}>
-        <div className={` ${splitMode ? 'h-40' : 'h-32' } w-full  bg-secondary rounded-md p-1`}>
+        <div className={` ${splitMode ? 'h-40' : 'h-32' } w-full ${darkMode ? 'bg-black' : 'bg-tertiary'} rounded-md p-1`}>
           <Meaning />
         </div>
-        <div className={` ${splitMode ? 'h-32' : 'h-40' } md:p-2 xs:p-4 bg-secondary rounded-md my-1`}>
+        <div className={` ${splitMode ? 'h-32' : 'h-40' } md:p-2 xs:p-4 ${darkMode ? 'bg-black' : 'bg-tertiary'} rounded-md my-1`}>
           <Image />
         </div>
-        <div style={handleHeight} className="w-full p-2 bg-secondary rounded-md flex-grow">
+        <div style={handleHeight} className={`w-full p-2 ${darkMode ? 'bg-black' : 'bg-tertiary'} rounded-md flex-grow`}>
             <Site />
         </div>
       </div>
-      <div className={`${splitMode ? 'w-1/2' : 'w-1/3'} mr-1 h-full shadow-xl py-2 bg-secondary rounded-md `}>
+      <div className={`${splitMode ? 'w-1/2' : 'w-1/3'} mr-1 h-full shadow-xl py-2 ${darkMode ? 'bg-black' : 'bg-tertiary'} rounded-md `}>
           <Youtube />
       </div>
       </>

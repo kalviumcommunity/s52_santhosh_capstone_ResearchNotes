@@ -20,9 +20,13 @@ const resultSlice = createSlice({
     },
     setViewer(state,action){
       state.viewer = action.payload;
+    },
+    resetResults(state,action){
+      state.results = {}
+      state.query = '' 
     }  
   }
 });
 
-export const {addResults,addQuery,setViewer} = resultSlice.actions;
+export const {addResults,addQuery,setViewer,resetResults} = resultSlice.actions;
 export default resultSlice.reducer;
