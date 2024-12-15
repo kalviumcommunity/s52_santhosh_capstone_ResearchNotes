@@ -30,13 +30,13 @@ function Search({setAuthModal,authLoading}) {
  
 
 const handleChange=(e)=> {
-  // if(isLogged){
+  if(isLogged){
     dispatch(addQuery(e.target.value))
-  // }else{
-  //   if(!authLoading){
-  //     setAuthModal(true)
-  //   }
-  // }
+  }else{
+    if(!authLoading){
+      setAuthModal(true)
+    }
+  }
 } 
 
 const handleSubmit = () => {
@@ -58,8 +58,8 @@ const handleHeight = {
     <div className={`flex ${results.okay ? "" :'flex-col'} items-center justify-center h-full max-w-[1800px] m-auto`}>
         {/* <img className="absolute z-[-1] spin" src={bgImage} alt="image" /> */}
       <div className={`${query !== '' || results.okay ? 'absolute top-4 m-auto' : "top-12" } 
-      ${splitMode && 'right-1/3'} transition-all duration-300 flex items-center`}>
-      <input id="search-bar" className={` border  ${darkMode ?  'border-white text-white' : 'border-black'} h-12 md:w-96 xs:w-80 rounded-full pl-5 pr-16 font-bold focus:outline-none bg-transparent`} type="text" placeholder="Search the entire web..."
+      ${splitMode && 'right-1/3'} transition-all duration-300 flex items-center z-10`}>
+      <input id="search-bar" className={` border  ${darkMode ?  'border-white text-white  bg-transparent' : 'border-black'} h-12 md:w-96 xs:w-80 rounded-full pl-5 pr-16 font-bold focus:outline-none`} type="text" placeholder="Search the entire web..."
       value={query} 
       onChange={handleChange}
       onKeyUp={(e)=>e.key=='Enter' && handleSubmit()}
@@ -75,7 +75,7 @@ const handleHeight = {
          !results.okay ?  
          search ? <div className="loader"></div> : 
       <>
-      <h1 className={`font-bold ${splitMode ? 'text-3xl m-5 mt-10' : 'text-5xl m-10'} font-inika text-primary h-12`}>U{typedText}<span className="font-thin animate-pulse">|</span></h1>
+      <h1 className={`font-bold ${splitMode ? 'text-2xl m-5 mt-10' : 'text-5xl m-10'} font-inika text-primary h-12`}>U{typedText}<span className="font-thin animate-pulse">|</span></h1>
         <p className={`text-center ${splitMode ? 'w-2/3' : 'w-1/3'} font-inika ${darkMode ? 'text-white' : 'text-black font-semibold'}`}>
         Your go-to destination for comprehensive online research. Find, organize, and share resources effortlessly.</p>
       </> : 

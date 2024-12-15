@@ -48,9 +48,9 @@ const activateUser = async (req,res) => {
               password: decoded.password,
               profile: "",
             });
-            await generateToken(res,data._id)
+            let accessToken = await generateToken(data._id)
             const {username,email,profile, createdAt,updatedAt, _id} = data
-            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt,updatedAt, _id}})
+            return res.status(200).json({message:'Signup successfully',data:{username,email,profile, createdAt,updatedAt, _id, accessToken}})
           }catch(err){
             console.log(err)
             return res.status(400).json({error:err.message})
@@ -74,9 +74,9 @@ const handleLogin = async (req,res) => {
     }
     const compare = await comparePassword(password, data.password);
     if(compare){
-      await generateToken(res,data._id)
+      let accessToken = await generateToken(data._id)
       const {username,email,profile,createdAt,updatedAt, _id} = data
-      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt,updatedAt, _id}})
+      return res.status(200).json({message:'Login successfully',data:{username,email,profile,createdAt,updatedAt, _id, accessToken}})
     }else{
       return res.status(403).json({error:'Incorrect password'}); 
     }
@@ -100,8 +100,8 @@ const handleUpdateUser = async (req, res) => {
     if (updateFields.password) {
       const hashedPassword = await hashPassword(updateFields.password);
       updateFields.password = hashedPassword;
-      await generateToken(res,req.params.id)
     }
+    let accessToken = await generateToken(req.params.id)
 
     const updatedUser = await userModel.findByIdAndUpdate(
       req.params.id,
@@ -112,7 +112,7 @@ const handleUpdateUser = async (req, res) => {
     const { username, email, profile, createdAt, updatedAt, _id } = updatedUser;
     res.status(200).json({
       message: 'Updated successfully',
-      data: { username, email, profile, createdAt, updatedAt, _id }
+      data: { username, email, profile, createdAt, updatedAt, _id, accessToken }
     });
   } catch (err) {
     console.error(err);
@@ -174,14 +174,5 @@ const handleGetUserData = async (req, res) => {
 }
  
 
-const handleLogout = async (req,res) => {
-  try{
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    res.status(200).json({message:'Logout successfull'})
-  }catch(err){
-    res.status(400).json({error:err.message})
-  }
-}
 
-module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleLogout}
+module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData}

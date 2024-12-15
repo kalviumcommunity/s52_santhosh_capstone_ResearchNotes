@@ -19,6 +19,8 @@ import Viewer from "./components/search/Viewer";
 import { CiLight, CiDark } from "react-icons/ci";
 import { changeTheme } from "./Redux/Slices/themeSlice";
 import toast, { Toaster } from 'react-hot-toast';
+import Cookies from 'js-cookie';
+
 
 
 function App() {
@@ -40,10 +42,14 @@ function App() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const handleAuth = () => {
+      // console.log(Cookies.get('accessToken'))
       if(returnUser){
         setAuthLoading(true)
-        axios.get(`${BASE_URL}/user-data`, { withCredentials: true })
-        .then((res) => {
+        axios.get(`${BASE_URL}/user-data`, {
+          headers: {
+              Authorization: Cookies.get('accessToken') || "no-token"
+          }
+      }).then((res) => {
           dispatch(addUserData(res.data.data)); 
         })
         .catch((err) => {
@@ -82,7 +88,7 @@ function App() {
     
   return (
     <div className={`${darkMode && 'bg-secondary'}`}>
-    {/* <div className="bg"></div> */}
+    <div className="bg"></div>
     <div className='top-0 h-screen w-full transition-all duration-500'>
        <Toaster />
       {/* signup & login modal */}{
@@ -97,11 +103,11 @@ function App() {
 
       {/* profile modal */}{
         profileModal && 
-      <Profile profileModal={profileModal} setProfileModal={setProfileModal} />
+      <Profile profileModal={profileModal} setProfileModal={setProfileModal} setAuthModal={setAuthModal} />
       }
 
      <nav className="w-full flex justify-between items-center h-20 px-4 font-bold z-20">
-      <h1 className={`font-island text-4xl font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>
+      <h1 className={`font-island text-4xl ${darkMode ? 'text-white' : 'text-black'}`} style={{fontWeight:'bold'}}>
         <span className="text-primary font-semibold">R</span>esearch
         <span className="text-primary font-semibold">N</span>otes
       </h1> 

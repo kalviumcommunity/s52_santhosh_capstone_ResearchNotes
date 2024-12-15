@@ -29,12 +29,15 @@ import NoteTemplate from "../../utlis/noteHTML";
 import axios from "axios";
 import DeleteModal from "./DeleteModal";
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+import Logout from "../../utlis/logout";
 
 function Editor() {
   const { isLogged } = useSelector((state) => state.userData);
   const { currentNote, splitMode, editMode } = useSelector(
     (state) => state.noteData
   );
+  const {handleLogout} = Logout();
 
   const [initialNote, setInitialNote] = useState({title: '',content: ''});
   const currentNoteRef = useRef(currentNote);
@@ -93,18 +96,25 @@ const saveNote = async (auto = true) => {
 
   dispatch(saveLoading(true));
 
-  const config = {
-    withCredentials: true,
-  };
 
   try {
+    
+    const accessToken = Cookies.get('accessToken')|| "no-token";
     let response;
     if (currentNoteRef.current.new) {
       // console.log('post')
-      response = await axios.post(`${BASE_URL}/post-note`, requestData, config);
+      response = await axios.post(`${BASE_URL}/post-note`, requestData, {
+        headers: {
+            Authorization: accessToken
+        }
+    })
       dispatch(addCurrentNote({ ...response.data, color: currentNote?.color }));
     } else {
-      response = await axios.patch(`${BASE_URL}/update-note/${currentNoteRef.current._id}`, requestData, config);
+      response = await axios.patch(`${BASE_URL}/update-note/${currentNoteRef.current._id}`, requestData, {
+        headers: {
+            Authorization: accessToken
+        }
+    });
     }
       if (!auto) {
         dispatch(updateSingleNote({ ...response.data, color: currentNote?.color }));
@@ -112,7 +122,13 @@ const saveNote = async (auto = true) => {
         dispatch(changeEditMode(false));
       }
   } catch (error) {
-    toast.error('Network Error')
+    // console.log(error)
+    if(error.response.data.error == "Invalid token"){
+      toast.error("Login Expired, Please Relogin");
+      handleLogout();
+    }else{
+      toast.error("Something went wrong!");
+    }
   } finally {
     dispatch(saveLoading(false));
   }
@@ -215,10 +231,14 @@ const saveNote = async (auto = true) => {
   }, []);
 
   const handleDelete = () => {
-    axios
-      .delete(`${BASE_URL}/delete-note/${currentNote._id}`, {
-        withCredentials: true,
-      })
+    axios.delete(
+      `${BASE_URL}/delete-note/${currentNote._id}`,
+      {
+        headers: {
+          Authorization: Cookies.get('accessToken') || "no-token"
+        }
+      }
+    )
       .then((res) => {
         dispatch(deleteSingleNote({ id: currentNote._id }));
         
@@ -226,7 +246,13 @@ const saveNote = async (auto = true) => {
         handleBack();
       })
       .catch((error) => {
-        toast.error('Network Error')
+        // console.log(error)
+        if(error.response.data.error == "Invalid token"){
+          toast.error("Login Expired, Please Relogin");
+          handleLogout();
+        }else{
+          toast.error("Something went wrong!");
+        }
       });
   };
 

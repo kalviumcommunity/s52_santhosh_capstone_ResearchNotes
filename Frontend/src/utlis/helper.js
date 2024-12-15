@@ -5,7 +5,7 @@ import { addResults } from '../Redux/Slices/resultSlice'
 
 function useHandleFetchResults(query) {
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const YT_API_KEY = import.meta.env.VITE_YT_API_KEY
   const UNSPLASH_API_KEY = import.meta.env.VITE_UNSPLASH_API_KEY

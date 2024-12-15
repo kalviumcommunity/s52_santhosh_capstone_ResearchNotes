@@ -6,7 +6,7 @@ import { addUserData } from "../../Redux/Slices/userSlice";
 import {useDispatch} from 'react-redux';
 import UserAvatar from './UserAvatar';
 import toast from 'react-hot-toast';
-
+import Cookies from 'js-cookie';
 
 
 const Signup = () => {
@@ -33,14 +33,21 @@ const Signup = () => {
 
     const onSubmit = async (data) => {
       setloading(true)
+      const accessToken = Cookies.get('accessToken') || "no-token";
       if(tempUserInfo.type != 'login'){
-        axios.post(`${BASE_URL}/signup`, {
-          username: data.username,
-          email : data.email,
-          password: data.password,
-        }, {
-          withCredentials: true
-        })
+        axios.post(
+          `${BASE_URL}/signup`,
+          {
+            username: data.username,
+            email: data.email,
+            password: data.password,
+          },
+          {
+            headers: {
+              Authorization: accessToken
+            }
+          }
+        )
         .then((res) => {
           delete data.password;
           delete data.repeatPassword;
@@ -59,11 +66,16 @@ const Signup = () => {
       }
       else{
         axios.patch(
-          `${BASE_URL}/update-user/${tempUserInfo._id}`, {password:data.password},
-         {
-          withCredentials: true,
-        })
+          `${BASE_URL}/update-user/${tempUserInfo._id}`,
+          { password: data.password },
+          {
+            headers: {
+              Authorization: accessToken  
+            }
+          }
+        )
         .then((res)=>{
+          Cookies.set('accessToken', res.data.data.accessToken);
           dispatch(addUserData({...res.data.data}))
           setTempUserInfo({})
           setAuthModal(false)

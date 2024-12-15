@@ -1,17 +1,23 @@
 import React from 'react';
 import { PiUploadSimpleBold} from "react-icons/pi";
 import {Avatar, Icon} from '@chakra-ui/react'
+import { useSelector } from 'react-redux';
 
 
-function UserAvatar({avatar,handleAvatarChange,userName}) {
+function UserAvatar({handleAvatarChange}) {
+
+  
+  const {values} = useSelector(state=>state.userData)
+  const {profile, userName} = values;
+  // console.log(profile);
 
   return (
     <div className="h-full w-full rounded-full relative border border-black">
 
         {
-           avatar ?
+           profile ?
                 <img
-                  src={avatar}
+                  src={profile}
                   alt="user avatar"
                   className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
                 /> :

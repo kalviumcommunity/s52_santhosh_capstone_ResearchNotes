@@ -6,6 +6,8 @@ import { AuthContext } from "./UserAuthModal";
 import { Avatar, Icon } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+
 
 function Otp() {
   const { setloading, setAuthModal,setPage,tempUserInfo, setTempUserInfo } = useContext(AuthContext);
@@ -20,16 +22,23 @@ function Otp() {
 
   function handleSubmit() {
     setloading(true)
+    
+    const accessToken = Cookies.get('accessToken') || "no-token";
     if(tempUserInfo.type=='signup'){
-      axios
-        .post(
-          `${BASE_URL}/activate-user`,
-          {
-            submittedOTP : otp,
-            token : tempUserInfo.token
-          },
-          { withCredentials: true})
+      axios.post(
+        `${BASE_URL}/activate-user`,
+        {
+          submittedOTP: otp,
+          token: tempUserInfo.token
+        },
+        {
+          headers: {
+            Authorization: accessToken
+          }
+        }
+      )
         .then((res) => {
+          Cookies.set('accessToken', res.data.data.accessToken);
           if(tempUserInfo.avatar){
             dispatch(addUserData({...res.data.data,profile : URL.createObjectURL(tempUserInfo.avatar)}))
           }else{
@@ -40,14 +49,17 @@ function Otp() {
             const formData = new FormData;
             formData.append('avatar',tempUserInfo.avatar)
             axios.patch(
-              `${BASE_URL}/update-user/${res.data.data._id}`, formData,
-             {
-              withCredentials: true,
-              headers: {
-                'Content-Type': 'multipart/form-data'
+              `${BASE_URL}/update-user/${res.data.data._id}`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: accessToken
+                }
               }
-            })
+            )
             .then((avatarRes)=>{
+              Cookies.set('accessToken', avatarRes.data.data.accessToken);
               dispatch(addUserData({...avatarRes.data.data}))
             })
             .catch((err)=>{
@@ -64,11 +76,18 @@ function Otp() {
           setloading(false)
         });
     }else{
-      axios.post(`${BASE_URL}/validate-otp`,{
-            submittedOTP : otp,
-            token : tempUserInfo.token
-          },
-          { withCredentials: true })
+      axios.post(
+        `${BASE_URL}/validate-otp`,
+        {
+          submittedOTP: otp,
+          token: tempUserInfo.token
+        },
+        {
+          headers: {
+            Authorization: accessToken
+          }
+        }
+      )
           .then((response) => {
             setTempUserInfo({ type:tempUserInfo.type, email:tempUserInfo.email, ...response.data }); 
             setPage('signup');

@@ -34,8 +34,6 @@ router.patch('/update-user/:id',upload.single('avatar'),handleUpdateUser)
 // Auth Middleware (Authorization)
 router.use(tokenAuth)   
 
-//logout
-router.get('/logout',handleLogout)
 
 //user-data
 router.get('/user-data',handleGetUserData)

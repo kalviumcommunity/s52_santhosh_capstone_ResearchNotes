@@ -4,15 +4,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { addNotes, addCurrentNote, changeEditMode } from "../../Redux/Slices/noteSlice";
 import { BsPinAngleFill , BsArrowRight , BsPlusSquareDotted } from "react-icons/bs";
 import { Text, Spinner } from "@chakra-ui/react";
-import { formatDistanceToNow } from "date-fns";
+  import { formatDistanceToNow } from "date-fns";
 import useTypewriter from 'react-typewriter-hook';
 import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
+import Logout from "../../utlis/logout";
 
 function Notes({authLoading,handleAuth}) {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const { collection,editMode,splitMode } = useSelector((state) => state.noteData);
   const { isLogged } = useSelector((state) => state.userData);
   const { darkMode } = useSelector((state) => state.theme);
+  
+  const {handleLogout} = Logout();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,10 +35,11 @@ function Notes({authLoading,handleAuth}) {
 
   const handleFetchNotes = () => {
     if (collection?.length === 0 && isLogged) {
-      axios
-        .get(`${BASE_URL}/get-notes`, {
-          withCredentials: true,
-        })
+      axios.get(`${BASE_URL}/get-notes`, {
+        headers: {
+            Authorization: Cookies.get('accessToken') || "no-token"
+        }
+    })
         .then((res) => {
           const coloredNotes = [...res.data,{new:true,_id:'new'}].map((note,index)=>{
             const randomColor = colors[index % colors.length]
@@ -41,7 +47,15 @@ function Notes({authLoading,handleAuth}) {
           })
           dispatch(addNotes(coloredNotes))
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          // console.log(error)
+          if(err.response.data.error == "Invalid token"){
+            toast.error("Login Expired, Please Relogin");
+            handleLogout();
+          }else{
+            toast.error("Something went wrong!");
+          }
+        })
     }
   }
 
@@ -64,8 +78,8 @@ function Notes({authLoading,handleAuth}) {
   if (!isLogged) {
     return (
       <div className="h-full flex">
-        <div className="h-full flex flex-col justify-center pl-10">
-          <h1  className="font-bold text-5xl font-inika text-primary h-12" >
+        <div className="h-full flex flex-col justify-center pl-5">
+          <h1  className="font-bold text-5xl font-inika text-primary h-30" >
           {typedText}</h1>
           <p className={`my-10 w-5/6 font-bold ${darkMode && 'text-white'}`}> 
           Unlock the power of ResearchNotes! Seamlessly integrate YouTube videos, images, and more into your notes, revolutionizing your project management.
@@ -88,7 +102,7 @@ function Notes({authLoading,handleAuth}) {
         <img
           src="https://res.cloudinary.com/dqijtrvuf/image/upload/v1715766403/zvvqzpgi0yt8x0yvbkn4.png"
           alt="hero"
-          className="h-5/6 select-none"
+          className="h-[80%] select-none"
         />
       </div>
     );

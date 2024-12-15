@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useState, useContext } from 'react';
 import { AuthContext } from "./UserAuthModal";
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+
 
 const Login = () => {
 
@@ -17,9 +19,14 @@ const Login = () => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     const onSubmit = (data) => {
+      const accessToken = Cookies.get('accessToken') || "no-token";
       setloading(true)
       if(forgotPassword){
-        axios.post(`${BASE_URL}/request-otp`,{email:data.email})
+        axios.post(`${BASE_URL}/request-otp`, { email: data.email }, {
+          headers: {
+              Authorization: accessToken
+          }
+      })
         .then((res)=>{
           setTempUserInfo({...res.data,type:'login',email:data.email})
           setPage('otp')
@@ -31,23 +38,26 @@ const Login = () => {
           setloading(false)
         }) 
       }else{
-        axios.post(`${BASE_URL}/login`,{
-            email:data.email,
-            password:data.password,
-          },{
-            withCredentials:true
-          })
+        axios.post(`${BASE_URL}/login`, {
+          email: data.email,
+          password: data.password,
+      }, {
+          headers: {
+              Authorization: accessToken
+          }
+      })
           .then((res)=>{
             // console.log(res.data)
+            Cookies.set('accessToken', res.data.data.accessToken);
             dispatch(addUserData(res.data.data))
             toast.success(res.data.message)
             setAuthModal(false) 
         })
           .catch((err)=>{
-            // console.log(err)
+            console.log(err)
+            toast.error(err?.response?.data?.error  || "Something went wrong!")
             if(err.response.status==401)  setError('email', { message: err.response.data.error });
             if(err.response.status==403)  setError('password', { message: err.response.data.error });
-            toast.error( err.response.data.error)
           })
           .finally(()=>{
             setloading(false)
@@ -86,7 +96,7 @@ const Login = () => {
           Password
         </label>
         <input
-          type="text"
+          type="password"
           id="password"
           className={`bg-transparent border ${
             errors.password ? "border-red-500" : "border-gray-400"
