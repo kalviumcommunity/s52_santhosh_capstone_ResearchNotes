@@ -81,7 +81,7 @@ function Profile({ profileModal, setProfileModal, setAuthModal }) {
                   </tr>
                   <tr>
                     <td className="pr-4 font-medium">Total No. of Notes</td>
-                    <td className="font-normal">: {collection?.length-1 || 0}</td>
+                    <td className="font-normal">: {collection?.length-1 >= 1 ?  collection?.length-1 : 0}</td>
                   </tr>
                 </tbody>
               </table>
