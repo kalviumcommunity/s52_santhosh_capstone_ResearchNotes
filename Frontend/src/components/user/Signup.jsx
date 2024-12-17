@@ -121,7 +121,7 @@ const Signup = () => {
 
             <div className="mt-3 font-serif">
               <label htmlFor="password" className="block">Password</label>
-              <input type="text" id="password" className={`focus:outline-none  bg-transparent border ${errors.password ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm font-thin pl-2`} placeholder="example123#" {...register('password',{required:'password is required',minLength:{
+              <input type="password" id="password" className={`focus:outline-none  bg-transparent border ${errors.password ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm font-thin pl-2`} placeholder="example123#" {...register('password',{required:'password is required',minLength:{
                 value:5,
                 message:'password should be greater than 5 characters'
                 },
@@ -134,7 +134,7 @@ const Signup = () => {
           
             <div className="mt-3 font-serif">
               <label htmlFor="repeat-password" className="block">Repeat Password</label>
-              <input type="text" id="repeat-password" className={`focus:outline-none  bg-transparent border ${errors.repeatPassword ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm font-thin pl-2`} placeholder="example123#" {...register("repeatPassword", {
+              <input type="password" id="repeat-password" className={`focus:outline-none  bg-transparent border ${errors.repeatPassword ? 'border-red-500' : 'border-gray-400'} h-10 w-full rounded-sm font-thin pl-2`} placeholder="example123#" {...register("repeatPassword", {
                 required: "Please repeat the password",
                 validate: (value) =>
                 value === watch('password') || "Password does not match",

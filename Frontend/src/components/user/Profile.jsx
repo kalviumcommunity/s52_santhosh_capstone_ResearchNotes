@@ -31,6 +31,7 @@ function Profile({ profileModal, setProfileModal, setAuthModal }) {
     // setProfileModal(false);
   }
 
+  // console.log(userData?.values?.profile);
   return (
     <div >
       <Drawer
@@ -74,13 +75,13 @@ function Profile({ profileModal, setProfileModal, setAuthModal }) {
                   </tr>
                   <tr>
                     <td className="pr-4 font-medium">Last updated</td>
-                    <td className="font-normal">: {formatDistanceToNow(new Date(userData?.values?.updatedAt), {
+                    <td className="font-normal">: {userData?.values?.updatedAt ? formatDistanceToNow(new Date(userData?.values?.updatedAt), {
                       addSuffix: true,
-                    })}</td>
+                    }) : "just now"}</td>
                   </tr>
                   <tr>
                     <td className="pr-4 font-medium">Total No. of Notes</td>
-                    <td className="font-normal">: {collection?.length || 0}</td>
+                    <td className="font-normal">: {collection?.length-1 || 0}</td>
                   </tr>
                 </tbody>
               </table>

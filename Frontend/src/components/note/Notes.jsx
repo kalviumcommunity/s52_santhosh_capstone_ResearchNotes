@@ -49,7 +49,7 @@ function Notes({authLoading,handleAuth}) {
         })
         .catch((error) => {
           // console.log(error)
-          if(err.response.data.error == "Invalid token"){
+          if(err?.response?.data?.error == "Invalid token"){
             toast.error("Login Expired, Please Relogin");
             handleLogout();
           }else{

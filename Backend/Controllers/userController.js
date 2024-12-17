@@ -173,6 +173,28 @@ const handleGetUserData = async (req, res) => {
   }
 }
  
+const handleGoogleAuth = async (req, res) => {
+  try{
+    if (!req.body) {
+      return res.status(400).json({ error: "No email or password provided" });
+    }
+      const { google_username , google_email, google_profile } = req.body;
+      let data = await userModel.findOne({ email: google_email });
+      if (!data) {
+          data =  await userModel.create({
+          username: google_username,
+          email: google_email,
+          password: "Google-Auth",
+          profile: google_profile,
+        });
+      }
+    let accessToken = await generateToken(data._id)
+    const {username,email,profile, createdAt,updatedAt, _id} = data
+    return res.status(200).json({message:'login successfully',data:{username,email,profile, createdAt,updatedAt, _id, accessToken}})
+  }catch(err){
+    console.log(err)
+    res.status(400).json({error:"Something went wrong"})
+  }
+}
 
-
-module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData}
+module.exports={handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleGoogleAuth}

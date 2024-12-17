@@ -54,7 +54,7 @@ const Login = () => {
             setAuthModal(false) 
         })
           .catch((err)=>{
-            console.log(err)
+            // console.log(err)
             toast.error(err?.response?.data?.error  || "Something went wrong!")
             if(err.response.status==401)  setError('email', { message: err.response.data.error });
             if(err.response.status==403)  setError('password', { message: err.response.data.error });

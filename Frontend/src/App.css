@@ -75,6 +75,17 @@ border: 2px solid red;
   background-repeat: repeat;
   background-position: center;
   filter: blur(2px); 
-  opacity: 0.4;
+  opacity: 0.6;
   z-index: -10;
+}
+
+
+.iframe-div > iframe {
+  width: 500px; 
+}
+
+@media (min-width: 768px) {
+  .iframe-div > iframe {
+    width: 100%; 
+  }
 }

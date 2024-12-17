@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Search from "./components/search/Search";
-import { Avatar, Icon, Spinner, Tooltip } from "@chakra-ui/react";
+import { Avatar, Icon, Spinner, Tooltip, Button } from "@chakra-ui/react";
 import { TbNotes } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
 import Notes from "./components/note/Notes";
@@ -83,6 +83,43 @@ function App() {
           setViewModal(false)
         }
     },[viewer])
+
+
+    const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Clean up event listener
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <div className="h-[100vh] w-full">
+          <h1 className={"font-island text-4xl"} style={{fontWeight:'bold'}}>
+            <span className="text-primary font-semibold">R</span>esearch
+            <span className="text-primary font-semibold">N</span>otes
+          </h1> 
+          <div className="h-5/6 flex flex-col items-center justify-center">
+              <h1 className="text-3xl">⚠️</h1>
+              <h1 className ="font-bold text-xs m-4">Please switch to laptop or desktop to access the site.</h1>
+              {/* <Button colorScheme='blue' onClick={() => { setProfileModal(false), handleLogout() }}>
+              
+            </Button> */}
+          </div>
+      </div>
+    );
+  }
+
 
 
     

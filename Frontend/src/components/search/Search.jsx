@@ -49,6 +49,12 @@ const handleSubmit = () => {
   }
 }
 
+useEffect(()=>{
+    if(query==""){
+      setSearch(false);
+    }
+},[query])
+
 const handleHeight = {
   height : splitMode ? "calc(100vh - 5rem - 18rem - 0.50rem)" : 'calc(100vh - 7.5rem - 18rem)'
 }

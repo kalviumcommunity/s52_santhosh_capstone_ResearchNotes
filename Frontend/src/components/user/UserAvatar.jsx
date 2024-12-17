@@ -4,20 +4,16 @@ import {Avatar, Icon} from '@chakra-ui/react'
 import { useSelector } from 'react-redux';
 
 
-function UserAvatar({handleAvatarChange}) {
+function UserAvatar({avatar, handleAvatarChange}) {
 
-  
-  const {values} = useSelector(state=>state.userData)
-  const {profile, userName} = values;
-  // console.log(profile);
 
   return (
     <div className="h-full w-full rounded-full relative border border-black">
 
         {
-           profile ?
+           avatar ?
                 <img
-                  src={profile}
+                  src={avatar}
                   alt="user avatar"
                   className="w-full h-full object-cover rounded-full opacity-100 hover:opacity-50"
                 /> :

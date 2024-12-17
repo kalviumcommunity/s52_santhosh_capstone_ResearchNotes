@@ -19,7 +19,9 @@ function useHandleFetchResults(query) {
         `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=20&videoDuration=long`
       )
       .then((res) => dispatch(addResults({ key: 'videos', value: res.data.items })))
-      .catch((err) => console.log(err.message))
+      .catch((err) => {
+        // console.log(err.message)
+        })
   }
 
   const fetchMeaning = () =>{
@@ -31,7 +33,9 @@ function useHandleFetchResults(query) {
             return meaning;
           });
           dispatch(addResults({ key: 'meaning', value:{word:res.data[0]?.word,defs:meanings}}))})
-        .catch((err) => console.log(err.message))
+        .catch((err) => {
+          // console.log(err.message)
+      })
   }
 
   const fetchImages = () => {
@@ -42,7 +46,9 @@ function useHandleFetchResults(query) {
           }
       })
       .then((res) => {dispatch(addResults({ key: 'images', value: res.data.results }))})
-      .catch((err) => console.log(err.message))
+      .catch((err) => {
+        // console.log(err.message)
+  })
   }
 
   const fetchSites = () => {
@@ -52,7 +58,9 @@ function useHandleFetchResults(query) {
         // console.log(res.data)
         dispatch(addResults({ key: 'sites', value: res.data.items }))
       })
-      .catch((err) => console.log(err.message))
+      .catch((err) => {
+        // console.log(err.message)
+      })
   }
  
   return {fetchVideos,fetchMeaning,fetchImages,fetchSites}

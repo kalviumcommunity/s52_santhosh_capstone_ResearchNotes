@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleLogout} = require('./Controllers/userController')
+const {handleSignUp, activateUser, handleLogin, handleUpdateUser, handleRequestOTP, handleValidateOTP, handleGetUserData, handleLogout, handleGoogleAuth} = require('./Controllers/userController')
 const tokenAuth = require('./Middleware/auth')
 const cookieParser = require('cookie-parser');
 const {handleGetNotes,handlePostNote,handleUpdateNote,handleDeleteNote} = require('./Controllers/noteController')
@@ -29,6 +29,9 @@ router.post('/validate-otp',handleValidateOTP)
 
 // user avatar set and update user data
 router.patch('/update-user/:id',upload.single('avatar'),handleUpdateUser)
+
+//google authentication
+router.post('/google-auth',handleGoogleAuth)
 
 
 // Auth Middleware (Authorization)

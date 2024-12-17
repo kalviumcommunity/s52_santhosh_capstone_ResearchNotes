@@ -36,7 +36,7 @@ function Youtube() {
                 alt="thumbnail"
                 className={`${splitMode ? 'h-24' : 'h-28'} p-2 rounded-sm cursor-pointer`}
                 onClick={()=>handleView(index)}
-                onDragStart={(e)=>handleDragStart(e,video?.id?.videoId)}
+                onDragStart={(e)=>handleDragStart(e, video?.id?.videoId)}
               />
               <div className="flex-grow">
                 <Heading noOfLines={2} fontSize="small" >

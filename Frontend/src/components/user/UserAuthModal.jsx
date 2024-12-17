@@ -16,6 +16,10 @@ import {auth,provider} from '../../google/config'
 import {useDispatch} from 'react-redux'
 import { addUserData } from "../../Redux/Slices/userSlice";
 import toast from 'react-hot-toast';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
 
 export const AuthContext = createContext(null);
 
@@ -24,6 +28,8 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
   const [loading, setloading] = useState(false)
   const [page, setPage] = useState('login')
 
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const dispatch = useDispatch();
 
 
@@ -31,15 +37,26 @@ const UserAuthModal = ({ authModal, setAuthModal }) => {
     setloading(true)
     signInWithPopup(auth, provider)
     .then((result)=>{
-      console.log(result)
-      dispatch(addUserData({
-        username:result.user.displayName,
-        email:result.user.email,
-        profile:result.user.photoURL,
-      }))
-      toast.success('logged in successfully')
-      setAuthModal(false)
+      // console.log(result)
+      axios.post(
+        `${BASE_URL}/google-auth`,
+        {
+          google_username:result.user.displayName,
+          google_email:result.user.email,
+          google_profile:result.user.photoURL,
+        }
+      )
+      .then((res)=>{
+        Cookies.set('accessToken', res.data.data.accessToken);
+        dispatch(addUserData({...res.data.data}))
+        toast.success('logged in successfully')
+        setAuthModal(false)
+      }).catch((err)=>{
+        // console.log(err)
+        toast.error('something went wrong')
+      })
     }).catch((err)=>{
+      // console.log(err)
       toast.error('something went wrong')
     })
     .finally(()=>{
