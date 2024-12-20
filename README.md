@@ -38,7 +38,7 @@ To set up and run the project locally, follow these steps:
 🎉 We're thrilled to welcome contributions! 🌟 Join us in making ResearchNotes even better by sharing your resources and insights. Together, we can create a comprehensive hub for knowledge seekers everywhere. 🚀
 
 
-## Deploy 
+## Deploy Links
 
-**Front-end** : https://researchnote.onrender.com/
-**Back-end** :  https://researchnotes.onrender.com/
+- **Front-end** : https://researchnote.onrender.com/
+- **Back-end** :  https://researchnotes.onrender.com/
